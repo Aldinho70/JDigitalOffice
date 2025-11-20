@@ -1,1 +1,5 @@
 @import url(../components/Main/Menu/Menu.css);
+
+body{
+    overflow-y: hidden;
+}
