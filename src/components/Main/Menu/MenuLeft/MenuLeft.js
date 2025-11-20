@@ -1,4 +1,4 @@
-import { Units } from "../../Units/Units.js";
+import { Units, loadUnitsTable } from "../../Units/Units.js";
 import { Dashboard } from "../../Dashboard/Dashboard.js";
 
 export const MenuLeft = () => {
@@ -36,6 +36,7 @@ export const changeView = (id) => {
 
         case "2":
             root.innerHTML = Units();
+            loadUnitsTable();
             break;
 
         case "3":

@@ -1,112 +1,69 @@
 export const Units = () => {
-    return `
-        <div class="">
+  return `
+    <div class="p-3">
+      <table id="tblUnits" class="table table-striped table-hover w-100">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Monitorista</th>
+            <th>Cliente</th>
+            <th>Unidad</th>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Comentario</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  `;
+};
 
-            <div class="card shadow-sm border-0 rounded-4">
-                
-                <!-- HEADER -->
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold">Unidades registradas</h5>
+export const loadUnitsTable = async () => {
+    try {
+        const url = "http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/getReports.php";
+        const resp = await fetch(url);
+        const data = await resp.json();
 
-                <button class="btn btn-primary rounded-3" data-bs-toggle="modal" data-bs-target="#modal-unit">
-                    <i class="bi bi-plus-circle me-2"></i>Registrar unidad
-                </button>
-                </div>
+        // Por si el endpoint envía un solo objeto en lugar de array
+        const rows = Array.isArray(data) ? data : [data];
 
-                <!-- BODY -->
-                <div class="card-body p-3">
+        // Limpiar instancia previa
+        if ($.fn.DataTable.isDataTable("#tblUnits")) {
+            $("#tblUnits").DataTable().destroy();
+        }
 
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Cliente</th>
-                        <th>Placa</th>
-                        <th>Estatus</th>
-                        <th>Último reporte</th>
-                        <th class="text-end">Acciones</th>
-                    </tr>
-                    </thead>
+        // Poblar manualmente el tbody
+        const tbody = document.querySelector("#tblUnits tbody");
+        tbody.innerHTML = rows.map(r => `
+            <tr>
+                <td>${r.id}</td>
+                <td>${r.fechaReporte}</td>
+                <td>${r.monitorista}</td>
+                <td>${r.cliente}</td>
+                <td>${r.Idunidad}</td>
+                <td>${r.nombreUnidad}</td>
+                <td>${r.tipoReporte}</td>
+                <td>${r.comentario}</td>
+            </tr>
+        `).join("");
 
-                    <tbody>
+        // Inicializar DataTable
+        $("#tblUnits").DataTable({
+            responsive: true,
+            pageLength: 10,
+            scrollY: "70vh",     // <-- altura fija
+            scrollCollapse: true,
+            paging: true,
+            language: {
+                url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-MX.json"
+            }
+        });
 
-                    <!-- FILA FAKE 1 -->
-                    <tr>
-                        <td>1</td>
-                        <td>Unidad 101</td>
-                        <td>Transportes MX</td>
-                        <td>ABC-123</td>
-                        <td><span class="badge bg-success">Activa</span></td>
-                        <td>Hace 2 min</td>
-                        <td class="text-end">
-                        <button class="btn btn-sm btn-outline-secondary me-1"><i class="bi bi-eye"></i></button>
-                        <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
 
-                    <!-- FILA FAKE 2 -->
-                    <tr>
-                        <td>2</td>
-                        <td>Unidad 202</td>
-                        <td>Logística Norte</td>
-                        <td>XYZ-789</td>
-                        <td><span class="badge bg-warning text-dark">Mantenimiento</span></td>
-                        <td>Hace 10 min</td>
-                        <td class="text-end">
-                        <button class="btn btn-sm btn-outline-secondary me-1"><i class="bi bi-eye"></i></button>
-                        <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
+    } catch (err) {
+        console.error("Error cargando datos:", err);
+    }
+};
 
-                    <!-- FILA FAKE 3 -->
-                    <tr>
-                        <td>3</td>
-                        <td>Unidad 303</td>
-                        <td>Express Cargo</td>
-                        <td>LMN-456</td>
-                        <td><span class="badge bg-danger">Inactiva</span></td>
-                        <td>Ayer</td>
-                        <td class="text-end">
-                        <button class="btn btn-sm btn-outline-secondary me-1"><i class="bi bi-eye"></i></button>
-                        <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-
-                    </tbody>
-
-                </table>
-
-                </div>
-            </div>
-
-            </div>
-
-            <!-- MODAL REGISTRO -->
-            <div class="modal fade" id="modal-unit" tabindex="-1">
-                <div class="modal-dialog modal-lg modal-dialog-centered">
-                    <div class="modal-content rounded-4 shadow">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold">Registrar unidad</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <p class="text-muted mb-0">Aquí irá el formulario…</p>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button class="btn btn-primary">Guardar</button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-    `
-}

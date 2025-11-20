@@ -1,6 +1,4 @@
-import { Units } from "../Units/Units.js"
 import { MenuLeft } from "./MenuLeft/MenuLeft.js"
-import { Dashboard } from "../Dashboard/Dashboard.js"
 
 export const Menu = () => {
     return `
