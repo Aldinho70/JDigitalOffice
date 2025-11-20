@@ -1,3 +1,6 @@
+import { Units } from "../../Units/Units.js";
+import { Dashboard } from "../../Dashboard/Dashboard.js";
+
 export const MenuLeft = () => {
   return `
     <div class="d-flex flex-column align-items-center gap-3 p-3 menu-left-buttons">
@@ -23,8 +26,30 @@ export const MenuLeft = () => {
 };
 
 
-export const changeView = ( id ) => {
-    console.log( id )
-}
+export const changeView = (id) => {
+    const root = document.getElementById("RightContent");
+
+    switch (id) {
+        case "1":
+            root.innerHTML = Dashboard();
+            break;
+
+        case "2":
+            root.innerHTML = Units();
+            break;
+
+        case "3":
+            root.innerHTML = "<h3>Reportes</h3>";
+            break;
+
+        case "4":
+            root.innerHTML = "<h3>Configuración</h3>";
+            break;
+
+        default:
+            root.innerHTML = "<h3>Vista no encontrada</h3>";
+    }
+};
+
 
 window.changeView = changeView;
