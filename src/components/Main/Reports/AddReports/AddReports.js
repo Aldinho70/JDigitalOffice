@@ -17,14 +17,14 @@ export const AddReports = () => {
             </div>
 
             <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label">ID Unidad</label>
-                    <input type="text" class="form-control" name="Idunidad" required>
+                <div class="">
+                    <label class="form-label ">Unidad</label>
+                    <select id="select-unidad" class="form-select" name="unidades" required></select>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-6  visually-hidden">
                     <label class="form-label">Nombre Unidad</label>
-                    <input type="text" class="form-control" name="nombreUnidad" required>
+                    <input type="text" class="form-control" name="nombreUnidad" id="nombreUnidad" required>
                 </div>
             </div>
 
@@ -54,6 +54,67 @@ export const AddReports = () => {
     `
 }
 
+export const loadUnitsSelect2 = () => {
+
+    axios.get("http://ws4cjdg.com/JDigitalReports/src/api/routes/units/getUnits.php")
+        .then(res => {
+            const unidades = res.data.unidades || [];
+
+            const $select = $("#select-unidad");
+
+            // limpiar por si se recarga la vista
+            $select.empty();
+
+            // agregar opción inicial
+            $select.append('<option value="">Seleccione unidad...</option>');
+
+            // agregar opciones dinámicas
+            unidades.forEach(u => {
+                $select.append(`
+                    <option 
+                        value="${u.id}" 
+                        data-icon="${u.icono}"
+                        data-id="${u.id}"
+                    >
+                        ${u.nombre}
+                    </option>
+                `);
+            });
+
+            // activar Select2 con íconos
+            $select.select2({
+                placeholder: "Seleccione una unidad...",
+                width: "100%",
+                templateResult: formatoUnidad,
+                templateSelection: formatoUnidad
+            });
+
+            // evento para rellenar nombreUnidad
+            $select.on("change", function () {
+                const nombre = $(this).find("option:selected").text().trim();
+                $("input[name='nombreUnidad']").val(nombre);
+            });
+
+        })
+        .catch(err => {
+            console.error("Error cargando unidades:", err);
+        });
+};
+
+export const formatoUnidad = ( unidad ) => {
+    if (!unidad.id) return unidad.text;
+    const icon = $(unidad.element).data("icon") || "./src/assets/logojs.png";
+    const html = `
+        <div class="d-flex align-items-center">
+            <img src="https://hst-api.wialon.com${icon}" 
+                 style="width:22px; height:22px; margin-right:8px;" 
+                 class="rounded-circle">
+            <span>${unidad.text}</span>
+        </div>
+    `;
+    return $(html);
+}
+
 $(document).on("submit", "#form-reporte", async function (e) {
     e.preventDefault();
 
@@ -69,12 +130,12 @@ $(document).on("submit", "#form-reporte", async function (e) {
     const data = {
         monitorista: $("input[name='monitorista']").val(),
         cliente: $("input[name='cliente']").val(),
-        Idunidad: $("input[name='Idunidad']").val(),
+        Idunidad: $("#select-unidad").val(),
         nombreUnidad: $("input[name='nombreUnidad']").val(),
         tipoReporte: $("select[name='tipoReporte']").val(),
         comentario: $("textarea[name='comentario']").val()
     };
-
+    
     try {
         const res = await axios.post(
             "http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/addReport.php",

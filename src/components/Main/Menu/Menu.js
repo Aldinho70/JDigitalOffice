@@ -12,7 +12,7 @@ export const Menu = () => {
                 </div>
 
                 <!-- CONTENIDO -->
-                <div class="col-11 offset-1" id="RightContent">
+                <div class="col-11 offset-1 " id="RightContent">
                     ${Reports()}
                     ${loadReportsTable()}
                 </div>

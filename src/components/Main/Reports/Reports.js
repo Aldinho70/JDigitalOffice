@@ -65,6 +65,7 @@ export const loadReportsTable = async () => {
         // Inicializar DataTable
         $("#tblReports").DataTable({
           responsive: true,
+          order: [[0, 'desc']],
           pageLength: 10,
           scrollY: "65vh",     
           scrollCollapse: true,

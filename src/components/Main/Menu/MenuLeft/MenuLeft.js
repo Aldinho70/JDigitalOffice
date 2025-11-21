@@ -1,6 +1,7 @@
-import { Dashboard } from "../../Dashboard/Dashboard.js";
-import { AddReports } from "../../Reports/AddReports/AddReports.js";
+import { Calendar } from "../../Calendar/Calendar.js";
+import { Dashboard, initCharts } from "../../Dashboard/Dashboard.js";
 import { Reports, loadReportsTable } from "../../Reports/Reports.js";
+import { AddReports, loadUnitsSelect2 } from "../../Reports/AddReports/AddReports.js";
 
 export const MenuLeft = () => {
   return `
@@ -18,6 +19,10 @@ export const MenuLeft = () => {
         <i class="bi bi-file-bar-graph fs-4"></i>
       </button>
 
+      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('6')" data-title="Calendario">
+        <i class="bi bi-calendar-date fs-4"></i>
+      </button>
+
       <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('5')" data-title="Configuración">
         <i class="bi bi-gear fs-4"></i>
       </button>
@@ -33,6 +38,7 @@ export const changeView = (id) => {
     switch (id) {
         case "1":
             root.innerHTML = Dashboard();
+            initCharts();
             break;
 
         case "2":
@@ -47,10 +53,15 @@ export const changeView = (id) => {
 
         case "4":
             root.innerHTML = AddReports();
+            loadUnitsSelect2();
             break;
 
         case "5":
             root.innerHTML = "<h3>Configuración</h3>";
+            break;
+
+        case "6":
+            root.innerHTML = Calendar();
             break;
 
         default:

@@ -1,4 +1,6 @@
 @import url(../components/Main/Menu/Menu.css);
+@import url(../components/Main/Calendar/Calendar.css);
+@import url(../components/Main/Dashboard/Dashboard.css);
 
 body{
     overflow-y: hidden;
