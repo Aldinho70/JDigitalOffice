@@ -1,5 +1,6 @@
-import { Reports, loadReportsTable } from "../../Reports/Reports.js";
 import { Dashboard } from "../../Dashboard/Dashboard.js";
+import { AddReports } from "../../Reports/AddReports/AddReports.js";
+import { Reports, loadReportsTable } from "../../Reports/Reports.js";
 
 export const MenuLeft = () => {
   return `
@@ -17,7 +18,7 @@ export const MenuLeft = () => {
         <i class="bi bi-file-bar-graph fs-4"></i>
       </button>
 
-      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('4')" data-title="Configuración">
+      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('5')" data-title="Configuración">
         <i class="bi bi-gear fs-4"></i>
       </button>
 
@@ -45,6 +46,10 @@ export const changeView = (id) => {
             break;
 
         case "4":
+            root.innerHTML = AddReports();
+            break;
+
+        case "5":
             root.innerHTML = "<h3>Configuración</h3>";
             break;
 

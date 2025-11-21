@@ -1,3 +1,5 @@
+import { changeView } from "../Menu/MenuLeft/MenuLeft.js";
+
 export const Reports = () => {
   return `
     <div class="p-3">
@@ -76,7 +78,7 @@ export const loadReportsTable = async () => {
               text: 'Nuevo reporte',
               className: 'btn btn-success',
               action: function () {
-                  console.log("Nuevo reporte");
+                changeView('4')
               }
             }
           ]
