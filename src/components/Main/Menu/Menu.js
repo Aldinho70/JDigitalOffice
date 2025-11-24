@@ -1,5 +1,4 @@
 import { MenuLeft } from "./MenuLeft/MenuLeft.js"
-import { Dashboard } from "../Dashboard/Dashboard.js"
 import { Reports, loadReportsTable } from "../Reports/Reports.js"
 
 export const Menu = () => {

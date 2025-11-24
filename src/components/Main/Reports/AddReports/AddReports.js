@@ -6,7 +6,7 @@ export const AddReports = () => {
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label class="form-label">Monitorista</label>
+                    <label class="form-label">Responsable</label>
                     <input type="text" class="form-control" name="monitorista" required>
                 </div>
 
@@ -30,12 +30,7 @@ export const AddReports = () => {
 
             <div class="mb-3">
                 <label class="form-label">Tipo de Reporte</label>
-                <select class="form-select" name="tipoReporte" required>
-                    <option value="">Seleccione...</option>
-                    <option value="Falla">Falla</option>
-                    <option value="Revisión">Revisión</option>
-                    <option value="Error Sensor">Error Sensor</option>
-                </select>
+                <select class="form-select" name="tipoReporte" id="select-type-failure" required></select>
             </div>
 
             <div class="mb-3">
@@ -55,7 +50,6 @@ export const AddReports = () => {
 }
 
 export const loadUnitsSelect2 = () => {
-
     axios.get("http://ws4cjdg.com/JDigitalReports/src/api/routes/units/getUnits.php")
         .then(res => {
             const unidades = res.data.unidades || [];
@@ -101,6 +95,53 @@ export const loadUnitsSelect2 = () => {
         });
 };
 
+export const loadTypeFailureSelect2 = () => {
+    axios.get("http://ws4cjdg.com/JDigitalReports/src/api/routes/config/type_failure/getTypeFailure.php")
+        .then(res => {
+            const fallas = res.data || [];
+
+            const $select = $("#select-type-failure");
+
+            // limpiar contenido previo
+            $select.empty();
+
+            // opción inicial
+            $select.append('<option value="">Seleccione tipo de falla...</option>');
+
+            // agrupar por categoría
+            const grupos = {};
+
+            fallas.forEach(f => {
+                if (!grupos[f.categoria]) {
+                    grupos[f.categoria] = [];
+                }
+                grupos[f.categoria].push(f);
+            });
+
+            // crear optgroups y opciones
+            Object.keys(grupos).forEach(cat => {
+                const $group = $(`<optgroup label="${cat.toUpperCase()}"></optgroup>`);
+
+                grupos[cat].forEach(f => {
+                    $group.append(`
+                        <option value="${f.nombre_falla}" data-id="${f.id}">
+                            ${f.nombre_falla}
+                        </option>
+                    `);
+                });
+
+                $select.append($group);
+            });
+
+            // inicializar Select2 (si no está inicializado)
+            $select.select2();
+        })
+        .catch(err => {
+            console.error("Error cargando fallas:", err);
+        });
+};
+
+
 export const formatoUnidad = ( unidad ) => {
     if (!unidad.id) return unidad.text;
     const icon = $(unidad.element).data("icon") || "./src/assets/logojs.png";
@@ -132,39 +173,42 @@ $(document).on("submit", "#form-reporte", async function (e) {
         cliente: $("input[name='cliente']").val(),
         Idunidad: $("#select-unidad").val(),
         nombreUnidad: $("input[name='nombreUnidad']").val(),
-        tipoReporte: $("select[name='tipoReporte']").val(),
+        tipoReporte: $("#select-type-failure").val(),
         comentario: $("textarea[name='comentario']").val()
     };
+
+    console.log(data);
     
-    try {
-        const res = await axios.post(
-            "http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/addReport.php",
-            data
-        );
+    
+    // try {
+    //     const res = await axios.post(
+    //         "http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/addReport.php",
+    //         data
+    //     );
 
-        msgBox.html(`
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <strong>Éxito:</strong> El reporte fue guardado correctamente.
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        `);
+    //     msgBox.html(`
+    //         <div class="alert alert-success alert-dismissible fade show" role="alert">
+    //             <strong>Éxito:</strong> El reporte fue guardado correctamente.
+    //             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    //         </div>
+    //     `);
 
-        // limpiar formulario
-        $("#form-reporte")[0].reset();
+    //     // limpiar formulario
+    //     $("#form-reporte")[0].reset();
 
-        setTimeout(() => {
-            changeView("2"); 
-        }, 1500);
+    //     setTimeout(() => {
+    //         changeView("2"); 
+    //     }, 1500);
 
-    } catch (err) {
-        msgBox.html(`
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Error:</strong> No se pudo guardar el reporte. Intente de nuevo.
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        `);
-        console.error(err);
-    }
+    // } catch (err) {
+    //     msgBox.html(`
+    //         <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    //             <strong>Error:</strong> No se pudo guardar el reporte. Intente de nuevo.
+    //             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    //         </div>
+    //     `);
+    //     console.error(err);
+    // }
 
     // restaurar botón
     btn.prop("disabled", false).html("Guardar");

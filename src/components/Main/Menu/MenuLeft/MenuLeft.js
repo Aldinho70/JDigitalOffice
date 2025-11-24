@@ -1,3 +1,4 @@
+import { Config } from "../../Config/Config.js";
 import { Calendar } from "../../Calendar/Calendar.js";
 import { Dashboard, initCharts } from "../../Dashboard/Dashboard.js";
 import { Reports, loadReportsTable } from "../../Reports/Reports.js";
@@ -57,7 +58,7 @@ export const changeView = (id) => {
             break;
 
         case "5":
-            root.innerHTML = "<h3>Configuración</h3>";
+            root.innerHTML = Config();
             break;
 
         case "6":
