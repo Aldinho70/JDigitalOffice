@@ -1,4 +1,5 @@
 import { changeView } from "../../Menu/MenuLeft/MenuLeft.js"
+import Env from "../../../../config/env.js";
 
 export const AddReports = () => {
     return `
@@ -50,7 +51,7 @@ export const AddReports = () => {
 }
 
 export const loadUnitsSelect2 = () => {
-    axios.get("http://ws4cjdg.com/JDigitalReports/src/api/routes/units/getUnits.php")
+    axios.get(`http://ws4cjdg.com/JDigitalReports/src/api/routes/units/getUnits.php?token=${Env.LOGIN.TOKEN}`)
         .then(res => {
             const unidades = res.data.unidades || [];
 
