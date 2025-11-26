@@ -181,35 +181,35 @@ $(document).on("submit", "#form-reporte", async function (e) {
     console.log(data);
     
     
-    // try {
-    //     const res = await axios.post(
-    //         "http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/addReport.php",
-    //         data
-    //     );
+    try {
+        const res = await axios.post(
+            "http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/addReport.php",
+            data
+        );
 
-    //     msgBox.html(`
-    //         <div class="alert alert-success alert-dismissible fade show" role="alert">
-    //             <strong>Éxito:</strong> El reporte fue guardado correctamente.
-    //             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    //         </div>
-    //     `);
+        msgBox.html(`
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Éxito:</strong> El reporte fue guardado correctamente.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `);
 
-    //     // limpiar formulario
-    //     $("#form-reporte")[0].reset();
+        // limpiar formulario
+        $("#form-reporte")[0].reset();
 
-    //     setTimeout(() => {
-    //         changeView("2"); 
-    //     }, 1500);
+        setTimeout(() => {
+            changeView("2"); 
+        }, 1500);
 
-    // } catch (err) {
-    //     msgBox.html(`
-    //         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    //             <strong>Error:</strong> No se pudo guardar el reporte. Intente de nuevo.
-    //             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    //         </div>
-    //     `);
-    //     console.error(err);
-    // }
+    } catch (err) {
+        msgBox.html(`
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Error:</strong> No se pudo guardar el reporte. Intente de nuevo.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `);
+        console.error(err);
+    }
 
     // restaurar botón
     btn.prop("disabled", false).html("Guardar");
