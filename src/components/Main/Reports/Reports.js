@@ -50,7 +50,7 @@ export const loadReportsTable = async () => {
                     <button class="btn btn-sm btn-primary me-1" data-id="${r.Idunidad}" onClick="viewReport('${r.id}')">
                         <i class="bi bi-eye"></i>
                     </button>
-                    <button class="btn btn-sm btn-warning me-1" data-id="${r.id}">
+                    <button class="btn btn-sm btn-warning me-1" data-id="${r.id}" onClick="editReport('${r.id}')">
                         <i class="bi bi-pencil-square"></i>
                     </button>
                     <button class="btn btn-sm btn-danger" data-id="${r.id}" onClick="deleteReport('${r.id}')">
@@ -207,6 +207,182 @@ const viewReport = async (id) => {
 
 window.viewReport = viewReport;
 
+const editReport = async (id) => {
+
+    // Crear modal base (con loader)
+    const modalHTML = `
+        <div class="modal fade" id="EditReportModal" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Editar Reporte</h5>
+                        <button class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        
+                        <div class="d-flex justify-content-center py-5" id="edit-loader">
+                            <div class="spinner-border"></div>
+                        </div>
+
+                        <form id="edit-report-form" class="visually-hidden">
+                            <input type="hidden" name="id" />
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Fecha del reporte</label>
+                                    <input id="edit_fecha" type="date" name="fecha" class="form-control" >
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Monitorista</label>
+                                    <input type="text" class="form-control" name="monitorista" disabled />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Cliente</label>
+                                    <input type="text" class="form-control" name="cliente" disabled />
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">ID Unidad</label>
+                                    <input type="text" class="form-control" name="Idunidad" disabled />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Nombre Unidad</label>
+                                    <input type="text" class="form-control" name="nombreUnidad" disabled />
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Tipo de Reporte</label>
+                                <input type="text" class="form-control" name="tipoReporte" disabled />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Comentario</label>
+                                <textarea class="form-control" name="comentario" rows="3"></textarea>
+                            </div>
+
+                            <div id="edit-msg" class="mt-2"></div>
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button class="btn btn-success" id="btn-save-edit">
+                            Guardar cambios
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    `;
+
+    // limpiar modal previa
+    $("#EditReportModal").remove();
+    $("body").append(modalHTML);
+
+    const modal = new bootstrap.Modal(document.getElementById("EditReportModal"));
+    modal.show();
+
+    // CARGA DEL REPORTE
+    try {
+        const res = await axios.post(
+            "http://ws4cjdg.com/JDigitalReports//src/api/routes/reports/getReportById.php",
+            { id }
+        );
+
+        const r = res.data.mensaje[0];
+
+        const fecha = new Date(r.fechaReporte);
+        const fechaISO = fecha.toISOString().slice(0, 10); // YYYY-MM-DD
+
+        $("#edit-report-form input[name='id']").val(r.id);
+        $("#edit-report-form input[name='monitorista']").val(r.monitorista);
+        $("#edit-report-form input[name='cliente']").val(r.cliente);
+        $("#edit-report-form input[name='Idunidad']").val(r.Idunidad);
+        $("#edit-report-form input[name='nombreUnidad']").val(r.nombreUnidad);
+        $("#edit-report-form input[name='tipoReporte']").val(r.tipoReporte);
+        $("#edit-report-form textarea[name='comentario']").val(r.comentario);
+        $("#edit_fecha").val(fechaISO);  // ✅ correcto
+
+
+        // mostrar form
+        $("#edit-loader").addClass("visually-hidden");
+        $("#edit-report-form").removeClass("visually-hidden");
+
+    } catch (err) {
+        $("#edit-loader").html(`
+            <div class="alert alert-danger">Error al cargar el reporte.</div>
+        `);
+        console.error(err);
+        return;
+    }
+
+    // EVENTO DE GUARDAR CAMBIOS
+    $("#btn-save-edit").off().on("click", async function () {
+        const btn = $(this);
+        const msgBox = $("#edit-msg");
+
+        msgBox.html("");
+
+        // spinner
+        btn.prop("disabled", true).html(`
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Guardando...
+        `);
+
+        const data = {
+            id: $("#edit-report-form input[name='id']").val(),
+            fechaReporte: $("#edit_fecha").val(),
+            monitorista: $("#edit-report-form input[name='monitorista']").val(),
+            cliente: $("#edit-report-form input[name='cliente']").val(),
+            Idunidad: $("#edit-report-form input[name='Idunidad']").val(),
+            nombreUnidad: $("#edit-report-form input[name='nombreUnidad']").val(),
+            tipoReporte: $("#edit-report-form input[name='tipoReporte']").val(),
+            comentario: $("#edit-report-form textarea[name='comentario']").val(),
+        };
+
+        try {
+            const update = await axios.post(
+                "http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/editReportById.php",
+                data
+            );
+
+            msgBox.html(`
+                <div class="alert alert-success p-2 mt-2">
+                    Cambios guardados correctamente.
+                </div>
+            `);
+
+            setTimeout(() => {
+                modal.hide();
+                if (typeof loadReportsTable === "function") {
+                    loadReportsTable();
+                }
+            }, 1200);
+
+        } catch (err) {
+            msgBox.html(`
+                <div class="alert alert-danger p-2 mt-2">
+                    Error al guardar los cambios.
+                </div>
+            `);
+            console.error(err);
+
+        } finally {
+            btn.prop("disabled", false).html("Guardar cambios");
+        }
+    });
+};
+
+window.editReport = editReport;
 
 const deleteReport = (id) => {
     const modalHTML = `

@@ -178,9 +178,6 @@ $(document).on("submit", "#form-reporte", async function (e) {
         comentario: $("textarea[name='comentario']").val()
     };
 
-    console.log(data);
-    
-    
     try {
         const res = await axios.post(
             "http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/addReport.php",
