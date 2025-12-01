@@ -1,7 +1,7 @@
 import { changeView } from "../Menu/MenuLeft/MenuLeft.js";
 
 export const Reports = () => {
-  return `
+    return `
     <div class="p-3">
     
       <table id="tblReports" class="table table-striped table-hover w-100">
@@ -9,10 +9,11 @@ export const Reports = () => {
           <tr>
             <th>ID</th>
             <th>Fecha</th>
-            <th>Responsable</th>
+            <th>Gestor</th>
             <th>Cliente</th>
             <th>Nombre de unidad</th>
             <th>Tipo</th>
+            <th>Status</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -24,7 +25,7 @@ export const Reports = () => {
 
 export const loadReportsTable = async () => {
     try {
-        const url = "http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/getReports.php";
+        const url = "http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/viewReportsTickets.php";
         const resp = await fetch(url);
         const data = await resp.json();
 
@@ -39,13 +40,14 @@ export const loadReportsTable = async () => {
         // Poblar manualmente el tbody
         const tbody = document.querySelector("#tblReports tbody");
         tbody.innerHTML = rows.map(r => `
-            <tr>
+            <tr class="">
                 <td>${r.id}</td>
                 <td>${r.fechaReporte}</td>
                 <td>${r.monitorista}</td>
                 <td>${r.cliente}</td>
                 <td>${r.nombreUnidad}</td>
                 <td>${r.tipoReporte}</td>
+                <td>${r.estado}</td>
                 <td class="text-center">
                     <button class="btn btn-sm btn-primary me-1" data-id="${r.Idunidad}" onClick="viewReport('${r.id}')">
                         <i class="bi bi-eye"></i>
@@ -62,27 +64,43 @@ export const loadReportsTable = async () => {
 
         // Inicializar DataTable
         $("#tblReports").DataTable({
-          responsive: true,
-          order: [[0, 'desc']],
-          pageLength: 10,
-          scrollY: "65vh",     
-          scrollCollapse: true,
-          paging: true,
-          language: {
-              url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-MX.json"
-          },
-          dom: '<"d-flex justify-content-between align-items-center mb-2"lfB>rtip',
-          buttons: [
-            {
-              text: 'Nuevo reporte',
-              className: 'btn btn-success',
-              action: function () {
-                changeView('4')
-              }
+            responsive: true,
+            order: [[0, 'desc']],
+            pageLength: 10,
+            scrollY: "65vh",
+            scrollCollapse: true,
+            paging: true,
+            language: {
+                url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-MX.json"
+            },
+            dom: '<"d-flex justify-content-between align-items-center mb-2"lfB>rtip',
+            buttons: [
+                {
+                    text: 'Nuevo reporte',
+                    className: 'btn btn-success',
+                    action: function () {
+                        changeView('4')
+                    }
+                }
+            ],
+            createdRow: function (row, data) {
+                console.log(data[6]);
+
+                // estado = col 6
+                if (data[6] === "Pendiente") {
+                    $('td', row).eq(6).addClass("bg-warning text-dark");
+                }
+
+                // if (data.estado === "Cerrado") {
+                //     $('td', row).eq(6).addClass("bg-success text-white");
+                // }
+
+                // if (data.estado === "Cancelado") {
+                //     $('td', row).eq(6).addClass("bg-danger text-white");
+                // }
             }
-          ]
         }
-      );
+        );
     } catch (err) {
         console.error("Error cargando datos:", err);
     }
@@ -92,21 +110,32 @@ const viewReport = async (id) => {
 
     // Modal inicial con loader
     const modalHTML = `
-        <div class="modal fade" id="ViewReportModal" tabindex="-1">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal fade" id="ReportFullView" tabindex="-1">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
                 <div class="modal-content">
 
-                    <div class="modal-header bg-warning text-white">
-                        <h5 class="modal-title"><i class="bi bi-file-text me-2"></i>Detalle del Reporte</h5>
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title">
+                            <i class="bi bi-file-earmark-text me-2"></i> Detalles del Reporte
+                        </h5>
                         <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
 
                     <div class="modal-body">
-                        <div class="d-flex justify-content-center py-5" id="report-loader">
-                            <div class="spinner-border"></div>
+
+                        <!-- Loader -->
+                        <div id="report-loader" class="text-center">
+                            <div class="spinner-border text-dark"></div>
+                            <p class="mt-2">Cargando...</p>
                         </div>
 
+                        <!-- Contenido final del reporte -->
                         <div id="report-content" class="visually-hidden"></div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     </div>
 
                 </div>
@@ -114,86 +143,242 @@ const viewReport = async (id) => {
         </div>
     `;
 
-    // Clean previous modals
-    $("#ViewReportModal").remove();
+    // Eliminar modal previo si existe
+    $("#ReportFullView").remove();
     $("body").append(modalHTML);
 
-    const modal = new bootstrap.Modal(document.getElementById("ViewReportModal"));
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById("ReportFullView"));
     modal.show();
 
     // Fetch del reporte
     try {
         const res = await axios.post(
-            "http://ws4cjdg.com/JDigitalReports//src/api/routes/reports/getReportById.php",
+            "http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/getReportById.php",
             { id }
         );
 
         const r = res.data.mensaje[0];
 
-        // Construir vista del reporte
+        console.log(r);
+        
+        // HTML final del reporte
         const html = `
             <div class="container-fluid">
+                <div class="row">
 
-                <!-- Fecha -->
-                <div class="mb-3 text-end">
-                    <span class="badge bg-secondary">
-                        <i class="bi bi-calendar-event me-1"></i> ${r.fechaReporte}
-                    </span>
-                </div>
+                    <!-- IZQUIERDA -->
+                    <div class="col-6">
 
-                <!-- Ficha del reporte -->
-                <div class="p-3 border rounded bg-light shadow-sm">
-
-                    <h5 class="mb-3"><i class="bi bi-card-heading me-2"></i> Información General</h5>
-
-                    <div class="row mb-2">
-                        <div class="col-md-6">
-                            <strong>Monitorista:</strong>
-                            <div>${r.monitorista}</div>
+                        <div class="text-end mb-3">
+                            Fecha de registro: 
+                            <span class="badge bg-secondary">
+                                <i class="bi bi-calendar-event me-1"></i> ${r.fechaReporte}
+                            </span>
                         </div>
 
-                        <div class="col-md-6">
-                            <strong>Cliente:</strong>
-                            <div>${r.cliente}</div>
+                        <div class="p-3 border rounded bg-light shadow-sm">
+
+                            <h5 class="mb-3 text-dark">
+                                <i class="bi bi-card-heading me-2"></i> Información General
+                            </h5>
+
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <strong>Gestor:</strong>
+                                    <div>${r.monitorista}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Cliente:</strong>
+                                    <div>${r.cliente}</div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <h6 class="mb-3 text-dark"><i class="bi bi-truck me-2"></i> Unidad</h6>
+
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <strong>ID Unidad:</strong>
+                                    <div>${r.Idunidad}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Nombre Unidad:</strong>
+                                    <div>${r.nombreUnidad}</div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <h6 class="mb-3 text-dark"><i class="bi bi-exclamation-diamond me-2"></i> Tipo de Reporte</h6>
+                            <span class="badge bg-warning text-dark fs-6">${r.tipoReporte}</span>
+
+                            <hr>
+
+                            <h6 class="mb-2 text-dark"><i class="bi bi-chat-left-text me-2"></i> Comentario del Gestor</h6>
+                            <div class="border rounded p-2 bg-white">
+                                ${r.comentario || "<span class='text-muted'>Sin comentarios</span>"}
+                            </div>
+
                         </div>
+
                     </div>
 
-                    <hr>
-
-                    <h6 class="mb-3"><i class="bi bi-truck me-2"></i> Unidad</h6>
-
-                    <div class="row mb-2">
-                        <div class="col-md-6">
-                            <strong>ID Unidad:</strong>
-                            <div>${r.Idunidad}</div>
+                    <!-- DERECHA -->
+                    <div class="col-6">
+                        <div class="text-end mb-3">
+                            Ultima Actualizacion: 
+                            <span class="badge bg-secondary">
+                                <i class="bi bi-calendar-event me-1"></i> ${r.fecha_ticket}
+                            </span>
                         </div>
+                        <div class="p-3 border rounded bg-white shadow-sm">
 
-                        <div class="col-md-6">
-                            <strong>Nombre Unidad:</strong>
-                            <div>${r.nombreUnidad}</div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="text-dark mb-0">
+                                    <i class="bi bi-tools me-2"></i> Seguimiento de Soporte Técnico
+                                </h5>
+                                <button class="btn btn-sm btn-warning" id="btnEditarSoporte">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </button>
+                            </div>
+
+                            <div id="soporte-view">
+
+                                <div class="mb-4">
+                                    <strong class="text-success"><i class="bi bi-chat-dots me-2"></i>Comentario principal</strong>
+                                    <div class="p-2 mt-1 border rounded bg-light">
+                                        ${r.comentario_soporte || "<span class='text-muted'>Sin comentarios de soporte técnico</span>"}
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <strong class="text-info"><i class="bi bi-gear me-2"></i>Tipo de acción</strong>
+                                    <div class="p-2 mt-1 border rounded bg-light">
+                                        ${r.accion || "<span class='text-muted'>Sin acción registrada</span>"}
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <strong class="text-primary"><i class="bi bi-patch-check me-2"></i>¿Equipo solucionado?</strong>
+                                    <div class="p-2 mt-1 border rounded bg-light">
+                                        ${r.solucionado || "<span class='text-muted'>Sin definir</span>"}
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <strong class="text-danger"><i class="bi bi-flag me-2"></i>Resolución Final</strong>
+                                    <div class="p-2 mt-1 border rounded bg-light">
+                                        ${r.resolucion || "<span class='text-muted'>Aún sin resolución</span>"}
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- FORMULARIO DE EDICIÓN (OCULTO AL INICIO) -->
+                            <div id="soporte-edit" class="visually-hidden">
+
+                                <!-- Comentario -->
+                                <label class="form-label fw-bold mt-2">Comentario principal</label>
+                                <textarea id="editComentarioSoporte" class="form-control" rows="2">${r.comentario_soporte || ""}</textarea>
+
+                                <!-- Acción -->
+                                <label class="form-label fw-bold mt-3">Tipo de acción</label>
+                                <select id="editAccion" class="form-select">
+                                    <option value="revision fisica">Revisión física</option>
+                                    <option value="revision fisica con tecnico">Revisión física con técnico</option>
+                                    <option value="envio de comandos">Envío de comandos</option>
+                                    <option value="reseteo de equipo">Reseteo de equipo</option>
+                                    <option value="equipo dañado">Equipo dañado</option>
+                                    <option value="equipo sin reparacion">Equipo sin reparación</option>
+                                </select>
+
+                                <!-- Solucionado -->
+                                <label class="form-label fw-bold mt-3">¿Equipo solucionado?</label>
+                                <select id="editSolucionado" class="form-select">
+                                    <option value="si">Sí</option>
+                                    <option value="no">No</option>
+                                </select>
+
+                                <!-- Resolución final -->
+                                <label class="form-label fw-bold mt-3">Resolución final</label>
+                                <textarea id="editResolucion" class="form-control" rows="2">${r.resolucion || ""}</textarea>
+
+                                <div id="msg-response" class="mt-3"></div>
+
+                                <div class="text-end mt-3">
+                                    <button class="btn btn-secondary" id="cancel-edit-btn">
+                                        <i class="bi bi-x-square me-2"></i> Cancelar edición
+                                    </button>
+
+                                    <button class="btn btn-success" id="btnGuardarSoporte">
+                                        <i class="bi bi-save me-2"></i> Guardar cambios
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <hr>
-
-                    <h6 class="mb-3"><i class="bi bi-exclamation-diamond me-2"></i> Tipo de Reporte</h6>
-                    <p class="mb-3 badge bg-warning text-dark fs-6">${r.tipoReporte}</p>
-
-                    <hr>
-
-                    <h6 class="mb-2"><i class="bi bi-chat-left-text me-2"></i> Comentario</h6>
-
-                    <div class="border rounded p-2 bg-white">
-                        ${r.comentario || "<span class='text-muted'>Sin comentarios</span>"}
-                    </div>
-
                 </div>
             </div>
         `;
 
-        // Inject content
+        // Mostrar el contenido final
         $("#report-content").html(html).removeClass("visually-hidden");
         $("#report-loader").addClass("visually-hidden");
+
+        // Activar modo edición
+        $("#btnEditarSoporte").on("click", () => {
+            $("#soporte-view").addClass("visually-hidden");
+            $("#soporte-edit").removeClass("visually-hidden");
+        });
+        
+        // Botón cancelar edición
+        $("#cancel-edit-btn").on("click", () => {
+            $("#soporte-view").removeClass("visually-hidden");
+            $("#soporte-edit").addClass("visually-hidden");
+        });
+
+        // Guardar cambios
+        $("#btnGuardarSoporte").on("click", async () => {
+
+            const msgBox = $("#msg-response");
+            const payload = {
+                id: r.id_ticket,
+                comentario_soporte: $("#editComentarioSoporte").val(),
+                accion: $("#editAccion").val(),
+                solucionado: $("#editSolucionado").val(),
+                resolucion: $("#editResolucion").val()
+            };
+
+            try {
+                await axios.post(
+                    "http://ws4cjdg.com/JDigitalReports/src/api/routes/tickets/editTicketById.php",
+                    payload
+                );
+
+                msgBox.html(`
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>Éxito:</strong> El reporte fue guardado correctamente.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `);
+
+                setTimeout(() => {
+                    viewReport(r.id)
+                    modal.hide()
+                }, 1500);
+            } catch (e) {
+                msgBox.html(`
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Error:</strong> No se pudo guardar el reporte. Intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `);
+                console.error(err);
+            }
+        });
+
 
     } catch (err) {
         $("#report-loader").html(`
@@ -204,7 +389,6 @@ const viewReport = async (id) => {
         console.error(err);
     }
 };
-
 window.viewReport = viewReport;
 
 const editReport = async (id) => {
@@ -238,7 +422,7 @@ const editReport = async (id) => {
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">Monitorista</label>
+                                    <label class="form-label">Gestor</label>
                                     <input type="text" class="form-control" name="monitorista" disabled />
                                 </div>
                                 <div class="col-md-6">

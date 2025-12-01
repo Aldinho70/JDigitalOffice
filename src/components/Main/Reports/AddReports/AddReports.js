@@ -7,7 +7,7 @@ export const AddReports = () => {
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label class="form-label">Responsable</label>
+                    <label class="form-label">Gestor</label>
                     <input type="text" class="form-control" name="monitorista" required>
                 </div>
 
