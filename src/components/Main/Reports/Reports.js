@@ -389,6 +389,7 @@ const viewReport = async (id) => {
         console.error(err);
     }
 };
+
 window.viewReport = viewReport;
 
 const editReport = async (id) => {
@@ -423,11 +424,11 @@ const editReport = async (id) => {
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Gestor</label>
-                                    <input type="text" class="form-control" name="monitorista" disabled />
+                                    <input type="text" class="form-control" name="monitorista"  />
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Cliente</label>
-                                    <input type="text" class="form-control" name="cliente" disabled />
+                                    <input type="text" class="form-control" name="cliente"  />
                                 </div>
                             </div>
 
@@ -438,13 +439,13 @@ const editReport = async (id) => {
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Nombre Unidad</label>
-                                    <input type="text" class="form-control" name="nombreUnidad" disabled />
+                                    <input type="text" class="form-control" name="nombreUnidad"  />
                                 </div>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Tipo de Reporte</label>
-                                <input type="text" class="form-control" name="tipoReporte" disabled />
+                                <input type="text" class="form-control" name="tipoReporte"  />
                             </div>
 
                             <div class="mb-3">
