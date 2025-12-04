@@ -88,16 +88,20 @@ export const loadReportsTable = async () => {
 
                 // estado = col 6
                 if (data[6] === "Pendiente") {
-                    $('td', row).eq(6).addClass("bg-warning text-dark");
+                    $('td', row).eq(6).addClass("bg-danger text-white");
                 }
 
-                // if (data.estado === "Cerrado") {
-                //     $('td', row).eq(6).addClass("bg-success text-white");
-                // }
+                if (data[6] == "Terminado") {
+                    $('td', row).eq(6).addClass("bg-success text-white");
+                }
 
-                // if (data.estado === "Cancelado") {
-                //     $('td', row).eq(6).addClass("bg-danger text-white");
-                // }
+                if (data.estado === "Rechazado") {
+                    $('td', row).eq(6).addClass("bg-secondary text-white");
+                }
+
+                if (data.estado === "Activado") {
+                    $('td', row).eq(6).addClass("bg-warning text-white");
+                }
             }
         }
         );
@@ -266,11 +270,18 @@ const viewReport = async (id) => {
                                         ${r.solucionado || "<span class='text-muted'>Sin definir</span>"}
                                     </div>
                                 </div>
-
+                                
                                 <div class="mb-4">
                                     <strong class="text-danger"><i class="bi bi-flag me-2"></i>Resolución Final</strong>
                                     <div class="p-2 mt-1 border rounded bg-light">
                                         ${r.resolucion || "<span class='text-muted'>Aún sin resolución</span>"}
+                                    </div>
+                                </div>
+
+                                 <div class="mb-4">
+                                    <strong class="text-warning"><i class="bi bi-flag me-2"></i>Estado de reporte</strong>
+                                    <div class="p-2 mt-1 border rounded bg-light">
+                                        ${r.estado || "<span class='text-muted'>Pendiente</span>"}
                                     </div>
                                 </div>
 
@@ -304,6 +315,15 @@ const viewReport = async (id) => {
                                 <!-- Resolución final -->
                                 <label class="form-label fw-bold mt-3">Resolución final</label>
                                 <textarea id="editResolucion" class="form-control" rows="2">${r.resolucion || ""}</textarea>
+
+                                <!-- EStado del reporte -->
+                                <label class="form-label fw-bold mt-3">Estado del reporte</label>
+                                <select id="editEstado" class="form-select">
+                                    <option value="pendiente">Pendiente</option>
+                                    <option value="activado">En proceso</option>
+                                    <option value="Terminado">Terminado</option>
+                                    <option value="Rechazado">Rechazado</option>
+                                </select>
 
                                 <div id="msg-response" class="mt-3"></div>
 
@@ -348,9 +368,12 @@ const viewReport = async (id) => {
                 comentario_soporte: $("#editComentarioSoporte").val(),
                 accion: $("#editAccion").val(),
                 solucionado: $("#editSolucionado").val(),
-                resolucion: $("#editResolucion").val()
+                resolucion: $("#editResolucion").val(),
+                estado: $("#editEstado").val(),
             };
 
+            console.log(payload);
+            
             try {
                 await axios.post(
                     "http://ws4cjdg.com/JDigitalReports/src/api/routes/tickets/editTicketById.php",
