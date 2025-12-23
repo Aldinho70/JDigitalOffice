@@ -1,6 +1,6 @@
 import { Config } from "../../Config/Config.js";
 import { Calendar } from "../../Calendar/Calendar.js";
-import { Dashboard, initCharts } from "../../Dashboard/Dashboard.js";
+import { Dashboard, initDashboard } from "../../Dashboard/Dashboard.js";
 import { Reports, loadReportsTable } from "../../Reports/Reports.js";
 import { AddReports, loadUnitsSelect2, loadTypeFailureSelect2 } from "../../Reports/AddReports/AddReports.js";
 
@@ -39,7 +39,7 @@ export const changeView = (id) => {
     switch (id) {
         case "1":
             root.innerHTML = Dashboard();
-            initCharts();
+            initDashboard();
             break;
 
         case "2":
