@@ -1,3 +1,5 @@
+import { Reports } from "../Reports/Reports.js"
+
 export const Dashboard = () => {
     return `
         <div class="container-fluid p-4">
@@ -11,31 +13,47 @@ export const Dashboard = () => {
         <!-- KPIS -->
         <div class="row g-3 mb-4">
             <div class="col-md-3">
-                <div class="kpi-card kpi-1">
+                <button class="kpi-card kpi-1 text-light w-100 border-0 text-start"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#kpiOffcanvas"
+                    aria-controls="kpiOffcanvas"
+                    data-kpi="all">
                     <h4 class="fw-bold" id="root-kpi-all-reports">0</h4>
                     <p class="m-0">Reportes</p>
-                </div>
+                </button>
             </div>
 
             <div class="col-md-3">
-                <div class="kpi-card kpi-2">
+                <button class="kpi-card kpi-2 text-light w-100 border-0 text-start"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#kpiOffcanvas"
+                    aria-controls="kpiOffcanvas"
+                    data-kpi="attended">
                     <h4 class="fw-bold" id="root-kpi-reports-attend">0</h4>
-                    <p class="m-0">Reportes antendidos</p>
-                </div>
+                    <p class="m-0">Reportes atendidos</p>
+                </button>
             </div>
 
             <div class="col-md-3">
-                <div class="kpi-card kpi-4">
+                <button class="kpi-card kpi-4 text-light w-100 border-0 text-start"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#kpiOffcanvas"
+                    aria-controls="kpiOffcanvas"
+                    data-kpi="not-attended">
                     <h4 class="fw-bold" id="root-kpi-reports-not-attend">0</h4>
                     <p class="m-0">Reportes no atendidos</p>
-                </div>
+                </button>
             </div>
 
             <div class="col-md-3">
-                <div class="kpi-card kpi-3">
+                <button class="kpi-card kpi-3 text-light w-100 border-0 text-start"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#kpiOffcanvas"
+                    aria-controls="kpiOffcanvas"
+                    data-kpi="efficiency">
                     <h4 class="fw-bold" id="root-kpi-porcent">0%</h4>
                     <p class="m-0">Eficiencia operativa</p>
-                </div>
+                </button>
             </div>
         </div>
 
@@ -65,6 +83,24 @@ export const Dashboard = () => {
 
         </div>
 
+        <!-- off-canvas -->
+        <div class="offcanvas offcanvas-bottom h-75" tabindex="-1" id="kpiOffcanvas" aria-labelledby="kpiOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="kpiOffcanvasLabel">
+                    <i class="bi bi-bar-chart me-2"></i> Detalle del KPI
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+            </div>
+
+            <div class="offcanvas-body">
+                <div id="kpi-offcanvas-content">
+                    <p class="text-muted text-center">
+                        Seleccione un KPI para ver su información detallada.
+                    </p>
+                </div>
+            </div>
+        </div>
+
     </div>
     `
 }
@@ -84,6 +120,42 @@ export const initDashboard = async () => {
     res = await getContField('tipoReporte');
     initChartFailure( res );
 }
+
+const getKpisTickets = async () => {
+    try {
+        const response = await fetch( 'http://ws4cjdg.com/JDigitalReports/src/api/routes/dashboard/viewDashboardKpisTickets.php' );
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        return {}
+    }
+}
+
+const getContField = async (campo) => {
+    try {
+        const response = await fetch(
+            "http://ws4cjdg.com/JDigitalReports/src/api/routes/dashboard/contFieldTickets.php",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ campo })
+            }
+        );
+
+        return await response.json();
+    } catch (error) {
+        console.error(error);
+        return {};
+    }
+};
+
+const viewReports = ( type ) => {
+    console.log(Reports());
+    
+}
+window.viewReports = viewReports
 
 const initChartClient = (dataClientes) => {
 
@@ -135,34 +207,4 @@ const initChartFailure = (data) => {
             data: pieData
         }]
     });
-};
-
-const getKpisTickets = async () => {
-    try {
-        const response = await fetch( 'http://ws4cjdg.com/JDigitalReports/src/api/routes/dashboard/viewDashboardKpisTickets.php' );
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        return {}
-    }
-}
-
-const getContField = async (campo) => {
-    try {
-        const response = await fetch(
-            "http://ws4cjdg.com/JDigitalReports/src/api/routes/dashboard/contFieldTickets.php",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ campo })
-            }
-        );
-
-        return await response.json();
-    } catch (error) {
-        console.error(error);
-        return {};
-    }
 };
