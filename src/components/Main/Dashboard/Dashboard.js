@@ -1,4 +1,4 @@
-import { Reports } from "../Reports/Reports.js"
+import { Reports, loadReportsTable } from "../Reports/Reports.js"
 
 export const Dashboard = () => {
     return `
@@ -17,9 +17,10 @@ export const Dashboard = () => {
                     data-bs-toggle="offcanvas"
                     data-bs-target="#kpiOffcanvas"
                     aria-controls="kpiOffcanvas"
-                    data-kpi="all">
-                    <h4 class="fw-bold" id="root-kpi-all-reports">0</h4>
-                    <p class="m-0">Reportes</p>
+                    data-kpi="all"
+                    onClick="viewReports('allReports')">
+                        <h4 class="fw-bold" id="root-kpi-all-reports">0</h4>
+                        <p class="m-0">Reportes</p>
                 </button>
             </div>
 
@@ -28,9 +29,10 @@ export const Dashboard = () => {
                     data-bs-toggle="offcanvas"
                     data-bs-target="#kpiOffcanvas"
                     aria-controls="kpiOffcanvas"
-                    data-kpi="attended">
-                    <h4 class="fw-bold" id="root-kpi-reports-attend">0</h4>
-                    <p class="m-0">Reportes atendidos</p>
+                    data-kpi="attended"
+                    onClick="viewReports('atendidas')">
+                        <h4 class="fw-bold" id="root-kpi-reports-attend">0</h4>
+                        <p class="m-0">Reportes atendidos</p>
                 </button>
             </div>
 
@@ -39,18 +41,15 @@ export const Dashboard = () => {
                     data-bs-toggle="offcanvas"
                     data-bs-target="#kpiOffcanvas"
                     aria-controls="kpiOffcanvas"
-                    data-kpi="not-attended">
-                    <h4 class="fw-bold" id="root-kpi-reports-not-attend">0</h4>
-                    <p class="m-0">Reportes no atendidos</p>
+                    data-kpi="not-attended"
+                    onClick="viewReports('noAtendidas')">
+                        <h4 class="fw-bold" id="root-kpi-reports-not-attend">0</h4>
+                        <p class="m-0">Reportes no atendidos</p>
                 </button>
             </div>
 
             <div class="col-md-3">
-                <button class="kpi-card kpi-3 text-light w-100 border-0 text-start"
-                    data-bs-toggle="offcanvas"
-                    data-bs-target="#kpiOffcanvas"
-                    aria-controls="kpiOffcanvas"
-                    data-kpi="efficiency">
+                <button class="kpi-card kpi-3 text-light w-100 border-0 text-start">
                     <h4 class="fw-bold" id="root-kpi-porcent">0%</h4>
                     <p class="m-0">Eficiencia operativa</p>
                 </button>
@@ -94,9 +93,7 @@ export const Dashboard = () => {
 
             <div class="offcanvas-body">
                 <div id="kpi-offcanvas-content">
-                    <p class="text-muted text-center">
-                        Seleccione un KPI para ver su información detallada.
-                    </p>
+                    
                 </div>
             </div>
         </div>
@@ -152,7 +149,8 @@ const getContField = async (campo) => {
 };
 
 const viewReports = ( type ) => {
-    console.log(Reports());
+    $("#kpi-offcanvas-content").html( Reports() )
+    loadReportsTable( type );
     
 }
 window.viewReports = viewReports

@@ -23,9 +23,9 @@ export const Reports = () => {
   `;
 };
 
-export const loadReportsTable = async () => {
+export const loadReportsTable = async ( filter ) => {
     try {
-        const url = "http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/viewReportsTickets.php";
+        const url = `http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/viewReportsTickets.php?filter=${filter}`;
         const resp = await fetch(url);
         const data = await resp.json();
 
@@ -84,8 +84,6 @@ export const loadReportsTable = async () => {
                 }
             ],
             createdRow: function (row, data) {
-                console.log(data[6]);
-
                 // estado = col 6
                 if (data[6] === "Pendiente") {
                     $('td', row).eq(6).addClass("bg-danger text-white");

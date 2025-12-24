@@ -44,12 +44,12 @@ export const changeView = (id) => {
 
         case "2":
             root.innerHTML = Reports();
-            loadReportsTable();
+            loadReportsTable('allReports');
             break;
 
         case "3":
             root.innerHTML = Reports();
-            loadReportsTable();
+            loadReportsTable('allReports');
             break;
 
         case "4":
