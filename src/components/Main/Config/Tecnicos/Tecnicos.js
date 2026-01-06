@@ -6,6 +6,7 @@ import { UI } from '../../../sharedComponents/sharedComponents.js';
 ========================= */
 let tecnicoMode = 'add'; // add | edit
 let tecnicoSelected = null;
+let tecnicoRowDT = null;
 
 /* =========================
    COMPONENTE PRINCIPAL
@@ -25,10 +26,11 @@ export const Tecnicos = () => {
 
                     <button class="btn btn-outline-primary btn-sm"
                         onClick="listTecnicos()">
-                        Lista de tecnicos
+                        Lista de técnicos
                     </button>
 
-                    <button class="btn btn-outline-success btn-sm" onClick="openAddTecnico()">
+                    <button class="btn btn-outline-success btn-sm"
+                        onClick="openAddTecnico()">
                         Agregar técnico nuevo
                     </button>
 
@@ -85,10 +87,10 @@ export const listTecnicos = async () => {
             searchable: false,
             render: (_, __, row) => `
                 <div class="d-flex gap-1 justify-content-center">
-                    <button class="btn btn-sm btn-warning btn-editar" data-id="${row.id}">
+                    <button class="btn btn-sm btn-warning btn-editar">
                         <i class="bi bi-pencil"></i>
                     </button>
-                    <button class="btn btn-sm btn-danger btn-borrar" data-id="${row.id}">
+                    <button class="btn btn-sm btn-danger btn-borrar">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -104,7 +106,7 @@ export const listTecnicos = async () => {
 window.listTecnicos = listTecnicos;
 
 /* =========================
-   MODAL FORM REUTILIZABLE
+   MODAL FORM
 ========================= */
 const tecnicoFormModal = () => `
 <div class="modal fade" id="TecnicoFormModal" tabindex="-1">
@@ -134,6 +136,8 @@ const tecnicoFormModal = () => `
             <label class="form-label">Celular</label>
             <input type="text" class="form-control" id="tecnico_telefono">
           </div>
+
+          <div id="msg-response-modal" class="mt-3"></div>
         </form>
       </div>
 
@@ -153,6 +157,7 @@ const tecnicoFormModal = () => `
 const openAddTecnico = () => {
     tecnicoMode = 'add';
     tecnicoSelected = null;
+    tecnicoRowDT = null;
 
     $("#TecnicoFormModal").remove();
     $("body").append(tecnicoFormModal());
@@ -172,21 +177,19 @@ $(document).on("click", ".btn-editar", function () {
 
     tecnicoMode = 'edit';
 
-    const row = $("#root-modal-body-tecnicos_table")
-        .DataTable()
-        .row($(this).closest("tr"))
-        .data();
+    const table = $("#root-modal-body-tecnicos_table").DataTable();
+    tecnicoRowDT = table.row($(this).closest("tr"));
 
-    tecnicoSelected = row;
+    tecnicoSelected = tecnicoRowDT.data();
 
     $("#TecnicoFormModal").remove();
     $("body").append(tecnicoFormModal());
 
     $("#tecnicoModalTitle").text("Editar técnico");
-    $("#tecnico_id").val(row.id);
-    $("#tecnico_nombre").val(row.nombre);
-    $("#tecnico_ciudad").val(row.ciudad);
-    $("#tecnico_telefono").val(row.numero_telefono);
+    $("#tecnico_id").val(tecnicoSelected.id);
+    $("#tecnico_nombre").val(tecnicoSelected.nombre);
+    $("#tecnico_ciudad").val(tecnicoSelected.ciudad);
+    $("#tecnico_telefono").val(tecnicoSelected.numero_telefono);
 
     new bootstrap.Modal("#TecnicoFormModal").show();
 });
@@ -196,6 +199,14 @@ $(document).on("click", ".btn-editar", function () {
 ========================= */
 $(document).on("click", "#btnSaveTecnico", async () => {
 
+    const btn = $("#btnSaveTecnico");
+    const msgBox = $("#msg-response-modal");
+
+    btn.prop("disabled", true).html(`
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        Guardando...
+    `);
+
     const payload = {
         id: $("#tecnico_id").val(),
         nombre: $("#tecnico_nombre").val(),
@@ -203,24 +214,67 @@ $(document).on("click", "#btnSaveTecnico", async () => {
         numero_telefono: $("#tecnico_telefono").val()
     };
 
-    if (tecnicoMode === 'add') {
-        console.log("ADD:", payload);
-        // request INSERT
-    } else {
-        console.log("EDIT:", payload);
-        // request UPDATE
+    try {
+
+        const url = tecnicoMode === 'add'
+            ? 'http://ws4cjdg.com/JDigitalReports/src/api/routes/config/technical/addTechnical.php'
+            : 'http://ws4cjdg.com/JDigitalReports/src/api/routes/config/technical/editTechnical.php';
+
+        const response = await request(url, 'POST', payload);
+
+        if (response.status !== 'ok') throw 'error';
+
+        if (tecnicoMode === 'edit' && tecnicoRowDT) {
+            tecnicoRowDT.data({
+                ...tecnicoSelected,
+                ...payload
+            }).draw(false);
+        }
+
+        msgBox.html(`
+            <div class="alert alert-success alert-dismissible fade show">
+                Técnico guardado correctamente.
+                <button class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `);
+
+        setTimeout(() => {
+            bootstrap.Modal.getInstance(
+                document.getElementById("TecnicoFormModal")
+            ).hide();
+        }, 800);
+
+    } catch {
+        msgBox.html(`
+            <div class="alert alert-danger">
+                Error al guardar técnico.
+            </div>
+        `);
     }
 
-    bootstrap.Modal.getInstance(
-        document.getElementById("TecnicoFormModal")
-    ).hide();
+    btn.prop("disabled", false).text("Guardar");
 });
 
 /* =========================
    ELIMINAR
 ========================= */
 $(document).on("click", ".btn-borrar", async function () {
-    const id = $(this).data("id");
-    console.log("DELETE:", id);
-    // confirmación + DELETE + reload tabla
+
+    const btn = $(this);
+    const table = $("#root-modal-body-tecnicos_table").DataTable();
+    const row = table.row(btn.closest("tr"));
+    const data = row.data();
+
+    const response = await request(
+        'http://ws4cjdg.com/JDigitalReports/src/api/routes/config/technical/deleteTechnical.php',
+        'POST',
+        { id: data.id }
+    );
+
+    if (response.status !== "ok") {
+        alert('Error al eliminar el técnico');
+        return;
+    }
+
+    row.remove().draw(false);
 });
