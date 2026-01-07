@@ -162,6 +162,7 @@ const viewReport = async (id) => {
 
         const r = res.data.mensaje[0];
 
+        const col_class = (r.requiere_tecnico == 1) ? 'col-4' : 'col-6';
         console.log(r);
         
         // HTML final del reporte
@@ -170,7 +171,7 @@ const viewReport = async (id) => {
                 <div class="row">
 
                     <!-- IZQUIERDA -->
-                    <div class="col-6">
+                    <div class="${col_class}">
 
                         <div class="text-end mb-3">
                             Fecha de registro: 
@@ -228,7 +229,7 @@ const viewReport = async (id) => {
                     </div>
 
                     <!-- DERECHA -->
-                    <div class="col-6">
+                    <div class="${col_class}">
                         <div class="text-end mb-3">
                             Ultima Actualizacion: 
                             <span class="badge bg-secondary">
@@ -239,7 +240,7 @@ const viewReport = async (id) => {
 
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="text-dark mb-0">
-                                    <i class="bi bi-tools me-2"></i> Seguimiento de Soporte Técnico
+                                    <i class="bi bi-pc-display me-2"></i> Seguimiento de Soporte Técnico
                                 </h5>
                                 <button class="btn btn-sm btn-warning" id="btnEditarSoporte">
                                     <i class="bi bi-pencil-square"></i> Editar
@@ -337,6 +338,88 @@ const viewReport = async (id) => {
                             </div>
                         </div>
                     </div>
+
+                    ${ (r.requiere_tecnico == 1) 
+                        ? `
+                        <div class="col-4">
+                            <div class="text-end mb-3">
+                                Ultima Actualizacion: 
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-calendar-event me-1"></i> ${r.fecha_asignacion}
+                                </span>
+                            </div>
+                            <div class="p-3 border rounded bg-white shadow-sm">
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="text-dark mb-0">
+                                        <i class="bi bi-tools me-2"></i> Seguimiento de tecnico
+                                    </h5>
+                                    <!--<button class="btn btn-sm btn-warning" id="btnEditarTecnico">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </button>-->
+                                </div>
+
+                                <div id="tecnico-view">
+
+                                    <div class="mb-4">
+                                        <strong class="text-success"><i class="me-2"></i>Tecnico instalador</strong>
+                                        <div class="p-2 mt-1 border rounded bg-light">
+                                            ${r.nombre_tecnico || "<span class='text-muted'>Jornada Digital</span>"}
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <strong class="text-success">Ciudad</strong>
+                                            <div class="p-2 mt-1 border rounded bg-light">
+                                                ${r.ciudad_tecnico || "<span class='text-muted'>No data</span>"}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <strong class="text-success">Teléfono</strong>
+                                            <div class="p-2 mt-1 border rounded bg-light">
+                                                ${r.numero_tecnico || "<span class='text-muted'>No data</span>"}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <strong class="text-success">Costo de reparación</strong>
+                                            <div class="p-2 mt-1 border rounded bg-light">
+                                                ${r.costo_tecnico || "<span class='text-muted'>No data</span>"}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <strong class="text-success">Costo de cobro a cliente</strong>
+                                            <div class="p-2 mt-1 border rounded bg-light">
+                                                ${r.costo_cliente || "<span class='text-muted'>No data</span>"}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <strong class="text-success"><i class="me-2"></i>Estatus de reparacion</strong>
+                                        <div class="p-2 mt-1 border rounded bg-light">
+                                            ${r.asignacion_status || "<span class='text-muted'>No data</span>"}
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <strong class="text-success"><i class="me-2"></i>Comentarios</strong>
+                                        <div class="p-2 mt-1 border rounded bg-light">
+                                            ${r.asignacion_comentarios || "<span class='text-muted'>No data</span>"}
+                                        </div>
+                                    </div>
+
+                                </div>
+                                
+                            </div>
+                        </div>`
+                        : ``
+                    } 
                 </div>
             </div>
         `;
