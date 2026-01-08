@@ -1,4 +1,5 @@
 import { changeView } from "../Menu/MenuLeft/MenuLeft.js";
+import { AssignationTechnical, initAssignationTechnical } from "./assignationTechnical/AssignationTechnical.js";
 
 export const Reports = () => {
     return `
@@ -113,7 +114,7 @@ const viewReport = async (id) => {
     // Modal inicial con loader
     const modalHTML = `
         <div class="modal fade" id="ReportFullView" tabindex="-1">
-            <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-dialog modal-fullscreen modal-dialog-centered">
                 <div class="modal-content">
 
                     <div class="modal-header bg-warning text-dark">
@@ -162,7 +163,7 @@ const viewReport = async (id) => {
 
         const r = res.data.mensaje[0];
 
-        const col_class = (r.requiere_tecnico == 1) ? 'col-4' : 'col-6';
+        const col_class = (r.nombre_tecnico != null) ? 'col-4' : 'col-6';
         console.log(r);
         
         // HTML final del reporte
@@ -256,17 +257,23 @@ const viewReport = async (id) => {
                                     </div>
                                 </div>
 
-                                <div class="mb-4">
-                                    <strong class="text-info"><i class="bi bi-gear me-2"></i>Tipo de acción</strong>
-                                    <div class="p-2 mt-1 border rounded bg-light">
-                                        ${r.accion || "<span class='text-muted'>Sin acción registrada</span>"}
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <strong class="text-info">
+                                            <i class="bi bi-gear me-2"></i>Tipo de acción
+                                        </strong>
+                                        <div class="p-2 mt-1 border rounded bg-light">
+                                            ${r.accion || "<span class='text-muted'>Sin acción registrada</span>"}
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="mb-4">
-                                    <strong class="text-primary"><i class="bi bi-patch-check me-2"></i>¿Equipo solucionado?</strong>
-                                    <div class="p-2 mt-1 border rounded bg-light">
-                                        ${r.solucionado || "<span class='text-muted'>Sin definir</span>"}
+                                    <div class="col-md-6">
+                                        <strong class="text-primary">
+                                            <i class="bi bi-patch-check me-2"></i>¿Equipo solucionado?
+                                        </strong>
+                                        <div class="p-2 mt-1 border rounded bg-light">
+                                            ${r.solucionado || "<span class='text-muted'>Sin definir</span>"}
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -282,6 +289,26 @@ const viewReport = async (id) => {
                                     <div class="p-2 mt-1 border rounded bg-light">
                                         ${r.estado || "<span class='text-muted'>Pendiente</span>"}
                                     </div>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <strong class="text-success">Escalado con tecnico</strong>
+                                        <div class="p-2 mt-1 border rounded bg-light">
+                                            ${(r.requiere_tecnico == 1) ? 'Si': 'No' || "<span class='text-muted'>No data</span>"}
+                                        </div>
+                                    </div>
+
+                                    ${ (r.nombre_tecnico == null) 
+                                        ? `
+                                            <div class="col-md-6">
+                                                <div class="p-2 mt-1 border rounded bg-light">
+                                                    <button class="btn btn-secondary" id="btn_asginar_tecnico" onClick="assigTech('${id}')">Mandar unidad con tecnico</button>
+                                                </div>
+                                            </div>
+                                        `
+                                        : '' 
+                                    }
                                 </div>
 
                             </div>
@@ -339,7 +366,7 @@ const viewReport = async (id) => {
                         </div>
                     </div>
 
-                    ${ (r.requiere_tecnico == 1) 
+                    ${ (r.nombre_tecnico != null) 
                         ? `
                         <div class="col-4">
                             <div class="text-end mb-3">
@@ -747,3 +774,21 @@ const confirmDelete = async (id) => {
     }
 };
 window.confirmDelete = confirmDelete;
+
+const assigTech = async (id) => {
+    try {
+        const res = await axios.post(
+            "http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/getReportById.php",
+            { id }
+        );
+    
+        const r = res.data.mensaje[0];
+        console.log(r);
+        
+        AssignationTechnical( r )
+        
+    } catch (error) {
+        
+    }
+}
+window.assigTech = assigTech;
