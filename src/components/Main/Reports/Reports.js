@@ -12,7 +12,7 @@ export const Reports = () => {
             <th>Fecha</th>
             <th>Gestor</th>
             <th>Cliente</th>
-            <th>Nombre de unidad</th>
+            <th>Unidad</th>
             <th>Tipo</th>
             <th>Status</th>
             <th>Acciones</th>
@@ -40,6 +40,7 @@ export const loadReportsTable = async ( filter ) => {
 
         // Poblar manualmente el tbody
         const tbody = document.querySelector("#tblReports tbody");
+        
         tbody.innerHTML = rows.map(r => `
             <tr class="">
                 <td>${r.id}</td>
@@ -99,7 +100,7 @@ export const loadReportsTable = async ( filter ) => {
                 }
 
                 if (data.estado === "Activado") {
-                    $('td', row).eq(6).addClass("bg-warning text-white");
+                    $('td', row).eq(6).addClass("bg-warning text-info");
                 }
             }
         }
@@ -109,7 +110,7 @@ export const loadReportsTable = async ( filter ) => {
     }
 };
 
-const viewReport = async (id) => {
+export const viewReport = async (id) => {
 
     // Modal inicial con loader
     const modalHTML = `
@@ -164,7 +165,6 @@ const viewReport = async (id) => {
         const r = res.data.mensaje[0];
 
         const col_class = (r.nombre_tecnico != null) ? 'col-4' : 'col-6';
-        console.log(r);
         
         // HTML final del reporte
         const html = `
@@ -272,7 +272,7 @@ const viewReport = async (id) => {
                                             <i class="bi bi-patch-check me-2"></i>¿Equipo solucionado?
                                         </strong>
                                         <div class="p-2 mt-1 border rounded bg-light">
-                                            ${r.solucionado || "<span class='text-muted'>Sin definir</span>"}
+                                            ${ (r.solucionado == 0) ? 'No' : 'Si' || "<span class='text-muted'>Sin definir</span>"}
                                         </div>
                                     </div>
                                 </div>
@@ -381,9 +381,9 @@ const viewReport = async (id) => {
                                     <h5 class="text-dark mb-0">
                                         <i class="bi bi-tools me-2"></i> Seguimiento de tecnico
                                     </h5>
-                                    <!--<button class="btn btn-sm btn-warning" id="btnEditarTecnico">
+                                    <button class="btn btn-sm btn-warning" id="btnEditarTecnico" onClick="assigTech('${id}')">
                                         <i class="bi bi-pencil-square"></i> Editar
-                                    </button>-->
+                                    </button>
                                 </div>
 
                                 <div id="tecnico-view">
@@ -423,6 +423,23 @@ const viewReport = async (id) => {
                                             <strong class="text-success">Costo de cobro a cliente</strong>
                                             <div class="p-2 mt-1 border rounded bg-light">
                                                 ${r.costo_cliente || "<span class='text-muted'>No data</span>"}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <strong class="text-success">Facturacion</strong>
+                                            <div class="p-2 mt-1 border rounded bg-light">
+                                                ${ (r.facturacion == 0) ? 'No' : 'Si'  || "<span class='text-muted'>No data</span>"}
+                                            </div>
+                                            
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <strong class="text-success">Fecha limite de pago</strong>
+                                            <div class="p-2 mt-1 border rounded bg-light">
+                                                ${r.fecha_limite_pago || "<span class='text-muted'>No data</span>"}
                                             </div>
                                         </div>
                                     </div>
