@@ -83,6 +83,13 @@ export const loadReportsTable = async ( filter ) => {
                     action: function () {
                         changeView('4')
                     }
+                },
+                {
+                    text: 'Cambiar vista a panel',
+                    className: 'btn btn-warning',
+                    action: function () {
+                        changeView('3')
+                    }
                 }
             ],
             createdRow: function (row, data) {
@@ -295,7 +302,7 @@ export const viewReport = async (id) => {
                                     <div class="col-md-6">
                                         <strong class="text-success">Escalado con tecnico</strong>
                                         <div class="p-2 mt-1 border rounded bg-light">
-                                            ${(r.requiere_tecnico == 1) ? 'Si': 'No' || "<span class='text-muted'>No data</span>"}
+                                            ${(r.nombre_tecnico != null) ? 'Si': 'No' || "<span class='text-muted'>No data</span>"}
                                         </div>
                                     </div>
 

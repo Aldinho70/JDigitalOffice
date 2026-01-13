@@ -2,6 +2,7 @@ import { Config } from "../../Config/Config.js";
 import { Calendar } from "../../Calendar/Calendar.js";
 import { Dashboard, initDashboard } from "../../Dashboard/Dashboard.js";
 import { Reports, loadReportsTable } from "../../Reports/Reports.js";
+import { ReportsCards, loadReportsCards } from "../../Reports/ReportCards/ReportCard.js";
 import { AddReports, loadUnitsSelect2, loadTypeFailureSelect2 } from "../../Reports/AddReports/AddReports.js";
 
 export const MenuLeft = () => {
@@ -48,8 +49,8 @@ export const changeView = (id) => {
             break;
 
         case "3":
-            root.innerHTML = Reports();
-            loadReportsTable('allReports');
+            root.innerHTML = ReportsCards();
+            loadReportsCards('allReports');
             break;
 
         case "4":
