@@ -1,4 +1,6 @@
 import { changeView } from "../../Menu/MenuLeft/MenuLeft.js";
+import { Technicals } from "../../Info/Technicals/Technicals.js";
+import { viewFacturation } from "../../Info/Facturation/Facturation.js";
 
 /* =========================
    CONFIG PAGINACIÓN
@@ -39,13 +41,19 @@ export const ReportsCards = () => {
 
                 <!-- BOTONES -->
                 <div class="d-flex gap-1 ms-auto">
-                    <button class="btn btn-sm btn-success" onclick="changeView('4')">
+
+                    <!--<button class="btn btn-sm btn-warning" onClick="Technicals('root_tecnico')">
+                        Tecnicos
+                    </button>-->
+
+                    <button class="btn btn-sm btn-success" onClick="changeView('4')">
                         Nuevo reporte
                     </button>
 
-                    <button class="btn btn-sm btn-warning" onclick="changeView('2')">
+                    <button class="btn btn-sm btn-warning" onClick="changeView('2')">
                         Cambiar vista
                     </button>
+                    
                 </div>
 
             </div>
@@ -66,7 +74,7 @@ export const loadReportsCards = async () => {
         const data = await resp.json();
 
         allReports = Array.isArray(data) ? data : [data];
-        filteredReports = [...allReports];
+        filteredReports = [...allReports.reverse()];
         currentPage = 1;
 
         renderCards();
@@ -145,10 +153,6 @@ const initCardsSearch = () => {
    CARD INDIVIDUAL
 ========================= */
 const createReportCard = (r) => {
-
-    console.log('ReportCard');
-    console.log(r);
-    
     const statusMap = {
         Pendiente: "danger",
         Terminado: "success",
@@ -177,10 +181,18 @@ const createReportCard = (r) => {
                 <div class="card-body">
 
                 <!-- UNIDAD -->
-                <h6 class="fw-bold mb-1">
-                    <i class="bi bi-truck me-1"></i>
-                    ${r.nombreUnidad}
-                </h6>
+                <div class="d-flex justify-content-between" >
+                    <h6 class="fw-bold mb-1">
+                        <i class="bi bi-truck me-1"></i>
+                        ${r.nombreUnidad}
+                    </h6>
+                    
+                    <h6 class="fw-bold mb-1">
+                        <i class="bi bi-person me-1"></i>
+                        ${r.monitorista}
+                    </h6>
+
+                </div>
                 <small class="text-muted d-block">
                     ID Unidad: ${r.Idunidad}
                 </small>
@@ -216,8 +228,11 @@ const createReportCard = (r) => {
                     <!-- INDICADORES -->
                     <div class="d-flex flex-wrap gap-1">
                         ${r.facturacion == 1 ? `<span class="badge bg-success">Facturable</span>` : ``}
-                        ${r.solucionado == "No" ? `<span class="badge bg-secondary">No solucionado</span>` : ``}
-                        ${r.asignacion_status ? `<span class="badge bg-info">${r.asignacion_status}</span>` : ``}
+                        ${ ( r.solucionado == 'si' )
+                            ? `<span class="badge bg-success">Solucionado</span>`
+                            : `<span class="badge bg-secondary">No solucionado</span>` 
+                        }
+                        ${r.nombre_tecnico != null ? `<span class="badge bg-info">Asig. Tecnico</span>` : ``}
                     </div>
                 </div>
 

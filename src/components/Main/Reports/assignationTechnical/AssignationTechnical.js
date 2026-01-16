@@ -53,56 +53,86 @@ export const AssignationTechnical = async ( data ) => {
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
-
+                            <div class="row mb-6">
+                                
                                 <div class="col-md-6">
-                                    <label class="form-label">Costo técnico</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">$</span>
-                                        <input 
-                                            ${ (data.costo_tecnico != null) ? `value="${data.costo_tecnico}"` : `` }
-                                            type="number"
-                                            class="form-control"
-                                            name="costo_tecnico"
-                                            step="0.01"
-                                            required
-                                        >
+                                    ${ (data.facturacion == null)
+                                        ? `<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                                Agregar factura
+                                            </button>`
+                                        : `<div class="col-md-6">
+                                                <label class="form-label">Facturacion</label>
+                                                <select class="form-select" name="facturacion" >
+                                                    <option value="0" ${data.facturacion == 0 ? 'selected' : ''}>
+                                                        No
+                                                    </option>
+                                                    <option value="1" ${data.facturacion === 1 ? 'selected' : ''}>
+                                                        Si
+                                                    </option>
+                                                </select>
+                                            </div> `
+                                     }
+                                    
+                                </div>
+
+                                <div class="collapse pt-2" id="collapseExample">
+                                    <div class="card card-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-6 p-2">
+                                                <label class="form-label">Costo técnico</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">$</span>
+                                                    <input 
+                                                        ${ (data.costo_tecnico != null) ? `value="${data.costo_tecnico}"` : `` }
+                                                        type="number"
+                                                        class="form-control"
+                                                        name="costo_tecnico"
+                                                        step="0.01"
+                                                        
+                                                    >
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6 p-2">
+                                                <label class="form-label">Costo cliente</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">$</span>
+                                                    <input
+                                                        ${ (data.costo_cliente != null) ? `value="${data.costo_cliente}"` : `` }
+                                                        type="number"
+                                                        class="form-control"
+                                                        name="costo_cliente"
+                                                        step="0.01"
+                                                        
+                                                    >
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6 p-2">
+                                                <label class="form-label">Folio</label>
+                                                <input type="input" class="form-control" name="folio" >
+                                            </div>
+    
+                                            <div class="col-md-6 p-2">
+                                                <label class="form-label">Fecha limite de pago</label>
+                                                <input type="date" class="form-control" name="fecha_limite_pago" ${ (data.fecha_limite_pago != null) ? `value="${data.fecha_limite_pago}"` : `` } >
+                                            </div>
+
+                                            <div class="col-md-6 p-2">
+                                                <label class="form-label">Concepto de cobro</label>
+                                                <input type="input" class="form-control" name="concepto" >
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Comentarios</label>
+                                                <textarea class="form-control" name="comentarios_facturacion" rows="3"></textarea>
+                                            </div>
+
+                                            <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" onClick="clearFactura()" >
+                                                Cancelar factura.
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Costo cliente</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">$</span>
-                                        <input
-                                            ${ (data.costo_cliente != null) ? `value="${data.costo_cliente}"` : `` }
-                                            type="number"
-                                            class="form-control"
-                                            name="costo_cliente"
-                                            step="0.01"
-                                            required
-                                        >
-                                    </div>
-                                </div>
-
-                            </div>
-
-                             <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">Facturacion</label>
-                                    <select class="form-select" name="facturacion" required>
-                                        <option value="0" ${data.facturacion == 0 ? 'selected' : ''}>
-                                            No
-                                        </option>
-                                        <option value="1" ${data.facturacion === 1 ? 'selected' : ''}>
-                                            Si
-                                        </option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Fecha limite de pago</label>
-                                    <input type="date" class="form-control" name="fecha_limite_pago" ${ (data.fecha_limite_pago != null) ? `value="${data.fecha_limite_pago}"` : `` } required>
                                 </div>
                             </div>
 
@@ -217,19 +247,31 @@ $(document).on("submit", "#form-asignacion", async function (e) {
         fecha_estimada_fin: form.find('[name="fecha_estimada_fin"]').val(),
         costo_tecnico: form.find('[name="costo_tecnico"]').val(),
         costo_cliente: form.find('[name="costo_cliente"]').val(),
-        facturacion: form.find('[name="facturacion"]').val(),
+        facturacion: ( form.find('[name="folio"]').val() ? 'si' : 'no'),
         fecha_limite_pago: form.find('[name="fecha_limite_pago"]').val(),
+        folio: form.find('[name="folio"]').val() ?? '',
+        concepto: form.find('[name="concepto"]').val() ?? '',
+        tipo_cobro: 'servicio',
+        comentarios_facturacion: form.find('[name="comentarios_facturacion"]').val() ?? '',
         comentarios: form.find('[name="comentarios"]').val()
     };
 
-    try {
-        const response = await request(
-            'http://ws4cjdg.com//JDigitalReports/src/api/routes/assignationTechnical/assignationTechnical.php',
-            'POST',
-            payload
-        );
+    // console.log( payload );
 
-        if (response.status === 'ok') {
+    try {
+        const resAssign = await saveAssignation(payload);
+
+        if (resAssign.status !== 'ok') throw new Error();
+
+        // solo si hay facturación relevante
+        if (payload.facturacion == 'si') {
+            console.log(payload);
+            
+            const resFact = await saveFacturation(payload);
+            if (resFact.status !== 'ok') throw new Error();
+        }
+
+        if (resAssign.status === 'ok') {
             msgBox.html(`
                 <div class="alert alert-success alert-dismissible fade show">
                     Asignación guardada correctamente.
@@ -251,7 +293,6 @@ $(document).on("submit", "#form-asignacion", async function (e) {
         } else {
             throw new Error();
         }
-
     } catch (err) {
         msgBox.html(`
             <div class="alert alert-danger">
@@ -259,6 +300,44 @@ $(document).on("submit", "#form-asignacion", async function (e) {
             </div>
         `);
     }
+    
+    // try {
+    //     const response = await request(
+    //         'http://ws4cjdg.com//JDigitalReports/src/api/routes/assignationTechnical/assignationTechnical.php',
+    //         'POST',
+    //         payload
+    //     );
+
+    //     if (response.status === 'ok') {
+    //         msgBox.html(`
+    //             <div class="alert alert-success alert-dismissible fade show">
+    //                 Asignación guardada correctamente.
+    //                 <button class="btn-close" data-bs-dismiss="alert"></button>
+    //             </div>
+    //         `);
+
+    //         setTimeout(() => {
+    //             bootstrap.Modal.getInstance(
+    //                 document.getElementById("modal_AssignationTechnical")
+    //             ).hide();
+
+    //             bootstrap.Modal.getInstance(
+    //                 document.getElementById("ReportFullView")
+    //             ).hide();
+
+    //             viewReport(form.find('[name="id_report"]').val())
+    //         }, 2000);
+    //     } else {
+    //         throw new Error();
+    //     }
+
+    // } catch (err) {
+    //     msgBox.html(`
+    //         <div class="alert alert-danger">
+    //             Error al guardar la asignación.
+    //         </div>
+    //     `);
+    // }
 });
 
 const editAssignationTechnical = async ( id ) => {
@@ -266,20 +345,24 @@ const editAssignationTechnical = async ( id ) => {
     const msgBox = $("#msg-response-asignacion");
 
     const payload = {
-        id_asignacion: id,
         ticket_id: form.find('[name="id_ticket"]').val(),
         tecnico_id: $("#select-Tecnico").val(),
         unidad: form.find('[name="unidad"]').val(),
         cliente: form.find('[name="cliente"]').val(),
         fecha_estimada_fin: form.find('[name="fecha_estimada_fin"]').val(),
-        status: form.find('[name="asignacion_status"]').val(),
         costo_tecnico: form.find('[name="costo_tecnico"]').val(),
         costo_cliente: form.find('[name="costo_cliente"]').val(),
-        facturacion: form.find('[name="facturacion"]').val(),
+        facturacion: ( form.find('[name="folio"]').val() ? 'si' : 'no'),
         fecha_limite_pago: form.find('[name="fecha_limite_pago"]').val(),
+        folio: form.find('[name="folio"]').val() ?? '',
+        concepto: form.find('[name="concepto"]').val() ?? '',
+        tipo_cobro: 'servicio',
+        comentarios_facturacion: form.find('[name="comentarios_facturacion"]').val() ?? '',
         comentarios: form.find('[name="comentarios"]').val()
     };
 
+    // console.log(payload);
+    
     try {
         const response = await request(
             'http://ws4cjdg.com//JDigitalReports/src/api/routes/assignationTechnical/editAssignationTechnical.php',
@@ -320,3 +403,46 @@ const editAssignationTechnical = async ( id ) => {
     
 }
 window.editAssignationTechnical = editAssignationTechnical;
+
+const clearFactura = () => {
+    const form = $("#form-asignacion");
+
+    form.find('[name="costo_tecnico"]').val('')
+    form.find('[name="costo_cliente"]').val('')
+    form.find('[name="facturacion"]').val('')
+    form.find('[name="fecha_limite_pago"]').val('')
+    form.find('folio').val('')
+}
+window.clearFactura = clearFactura
+
+const saveAssignation = (payload) => {
+    return request(
+        'http://ws4cjdg.com/JDigitalReports/src/api/routes/assignationTechnical/assignationTechnical.php',
+        'POST',
+        payload
+    );
+};
+
+const saveFacturation = (payload) => {
+    return request(
+        'http://ws4cjdg.com/JDigitalReports/src/api/routes/facturation/addFacturation.php',
+        'POST',
+        payload
+    );
+};
+
+const editAssignation = (payload) => {
+    return request(
+        'http://ws4cjdg.com//JDigitalReports/src/api/routes/assignationTechnical/editAssignationTechnical.php',
+        'POST',
+        payload
+    );
+};
+
+const editFacturation = (payload) => {
+    return request(
+        'http://ws4cjdg.com/JDigitalReports/src/api/routes/facturation/editFacturation.php',
+        'POST',
+        payload
+    );
+};

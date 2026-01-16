@@ -94,12 +94,16 @@ export const loadReportsTable = async ( filter ) => {
             ],
             createdRow: function (row, data) {
                 // estado = col 6
-                if (data[6] === "Pendiente") {
+                if (data[6] == "Pendiente" || data[6] == "pendiente") {
                     $('td', row).eq(6).addClass("bg-danger text-white");
                 }
 
                 if (data[6] == "Terminado") {
                     $('td', row).eq(6).addClass("bg-success text-white");
+                }
+
+                if (data[6] == "en_proceso") {
+                    $('td', row).eq(6).addClass("bg-warning text-white");
                 }
 
                 if (data.estado === "Rechazado") {
@@ -126,9 +130,15 @@ export const viewReport = async (id) => {
                 <div class="modal-content">
 
                     <div class="modal-header bg-warning text-dark">
-                        <h5 class="modal-title">
-                            <i class="bi bi-file-earmark-text me-2"></i> Detalles del Reporte
-                        </h5>
+                        <div class=" d-flex justify-align-content-between " >
+                            <h5 class="modal-title">
+                                <i class="bi bi-file-earmark-text me-2"></i> Detalles del Reporte
+                            </h5>
+                            <h5 class="modal-title">
+                                <i class="bi bi-file-earmark-text me-2"></i> Reporte id: ${id}
+                            </h5>
+
+                        </div>
                         <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
 
@@ -143,10 +153,6 @@ export const viewReport = async (id) => {
                         <!-- Contenido final del reporte -->
                         <div id="report-content" class="visually-hidden"></div>
 
-                    </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     </div>
 
                 </div>
@@ -172,6 +178,8 @@ export const viewReport = async (id) => {
         const r = res.data.mensaje[0];
 
         const col_class = (r.nombre_tecnico != null) ? 'col-4' : 'col-6';
+        
+        console.log(r);
         
         // HTML final del reporte
         const html = `
@@ -279,7 +287,7 @@ export const viewReport = async (id) => {
                                             <i class="bi bi-patch-check me-2"></i>¿Equipo solucionado?
                                         </strong>
                                         <div class="p-2 mt-1 border rounded bg-light">
-                                            ${ (r.solucionado == 0) ? 'No' : 'Si' || "<span class='text-muted'>Sin definir</span>"}
+                                            ${ ( r.solucionado == 0 || r.solucionado == 'No' ) ? 'No' : 'Si' || "<span class='text-muted'>Sin definir</span>"}
                                         </div>
                                     </div>
                                 </div>
@@ -292,7 +300,7 @@ export const viewReport = async (id) => {
                                 </div>
 
                                  <div class="mb-4">
-                                    <strong class="text-warning"><i class="bi bi-flag me-2"></i>Estado de reporte</strong>
+                                    <strong class="text-dark"><i class="bi bi-flag me-2"></i>Estado de reporte</strong>
                                     <div class="p-2 mt-1 border rounded bg-light">
                                         ${r.estado || "<span class='text-muted'>Pendiente</span>"}
                                     </div>
@@ -353,7 +361,7 @@ export const viewReport = async (id) => {
                                 <label class="form-label fw-bold mt-3">Estado del reporte</label>
                                 <select id="editEstado" class="form-select">
                                     <option value="pendiente">Pendiente</option>
-                                    <option value="activado">En proceso</option>
+                                    <option value="en_proceso">En proceso</option>
                                     <option value="Terminado">Terminado</option>
                                     <option value="Rechazado">Rechazado</option>
                                 </select>
@@ -376,15 +384,13 @@ export const viewReport = async (id) => {
                     ${ (r.nombre_tecnico != null) 
                         ? `
                         <div class="col-4">
-                            <div class="text-end mb-3">
-                                Ultima Actualizacion: 
+                            <div class="text-end mb-3">Ultima Actualizacion: 
                                 <span class="badge bg-secondary">
                                     <i class="bi bi-calendar-event me-1"></i> ${r.fecha_asignacion}
                                 </span>
                             </div>
-                            <div class="p-3 border rounded bg-white shadow-sm">
-
-                                <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="p-1 border rounded bg-white shadow-sm">
+                                <div class="d-flex justify-content-between align-items-center">
                                     <h5 class="text-dark mb-0">
                                         <i class="bi bi-tools me-2"></i> Seguimiento de tecnico
                                     </h5>
@@ -394,79 +400,112 @@ export const viewReport = async (id) => {
                                 </div>
 
                                 <div id="tecnico-view">
-
-                                    <div class="mb-4">
-                                        <strong class="text-success"><i class="me-2"></i>Tecnico instalador</strong>
-                                        <div class="p-2 mt-1 border rounded bg-light">
-                                            ${r.nombre_tecnico || "<span class='text-muted'>Jornada Digital</span>"}
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-4">
-                                        <div class="col-md-6">
-                                            <strong class="text-success">Ciudad</strong>
-                                            <div class="p-2 mt-1 border rounded bg-light">
-                                                ${r.ciudad_tecnico || "<span class='text-muted'>No data</span>"}
+                                    <fieldset class="border border-warning rounded p-1">
+                                        <legend class="float-none w-auto fw-semibold text-bg-warning ">Datos de tecnico</legend>
+                                        <div class="row mb-1 ">
+                                            <div class="col-md-6">
+                                                <strong class="text-dark">
+                                                <i class="me-2 bi bi-person-gear"></i>Tecnico instalador</strong>
+                                                <div class="p-2 mt-1 border rounded bg-light">
+                                                    ${r.nombre_tecnico || "<span class='text-muted'>Jornada Digital</span>"}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <i class="me-2 bi bi-currency-dollar"></i>
+                                                <strong class="text-dark">Costo de reparación</strong>
+                                                <div class="p-2 mt-1 border rounded bg-light">
+                                                    $${r.costo_tecnico || "<span class='text-muted'>No data</span>"}
+                                                </div>
                                             </div>
                                         </div>
+                                    </fieldset>
 
-                                        <div class="col-md-6">
-                                            <strong class="text-success">Teléfono</strong>
-                                            <div class="p-2 mt-1 border rounded bg-light">
-                                                ${r.numero_tecnico || "<span class='text-muted'>No data</span>"}
+                                    <fieldset class="border border-warning rounded p-1 position-relative">
+                                        <legend class="float-none w-auto fw-semibold text-bg-warning">Facturacion</legend>
+
+                                        <button class="btn btn-sm btn-warning position-absolute m-1" onClick="viewFacturation(${r.facturacion_id})" style="left: 400px; top: -20px;">
+                                            <i class="bi bi-eye"></i> Ver Factura
+                                        </button>
+
+                                        <div class="row mb-1">
+                                            <div class="col-md-6">
+                                                <strong class="text-dark">Facturacion</strong>
+                                                <div class="p-2 mt-1 border rounded bg-light">
+                                                    ${ (r.facturacion == 'No' || r.facturacion == 0) ? 'No' : 'Si'  || "<span class='text-muted'>No data</span>"}
+                                                </div>
+                                                
                                             </div>
+
+                                            <div class="col-md-6">
+                                                <i class="me-2 bi bi-book"></i>
+                                                <strong class="text-dark">Folio</strong>
+                                                <div class="p-2 mt-1 border rounded bg-light">
+                                                    ${r.facturacion_folio || "<span class='text-muted'>No data</span>"}
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <i class="me-2 bi bi-currency-dollar"></i>
+                                                <strong class="text-dark">Costo de cobro a cliente</strong>
+                                                <div class="p-2 mt-1 border rounded bg-light">
+                                                    $${r.costo_cliente || "<span class='text-muted'>No data</span>"}
+                                                </div>
+                                            </div>
+                                                
+                                            <div class="col-md-6">
+                                                <i class="me-2 bi bi-calendar-date"></i>
+                                                <strong class="text-dark">Fecha limite de pago</strong>
+                                                <div class="p-2 mt-1 border rounded bg-light">
+                                                    ${r.fecha_limite_pago || "<span class='text-muted'>No data</span>"}
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <i class="me-2 bi bi-bookmark-fill"></i>
+                                                <strong class="text-dark">Status de pago</strong>
+                                                <div class="p-2 mt-1 border rounded bg-light">
+                                                    ${ (r.facturacion_status == 'pendiente') 
+                                                        ? `Pendiente de pago`
+                                                        : r.facturacion_status
+                                                    }
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <i class="me-2 bi bi-bookmark-fill"></i>
+                                                <strong class="text-dark">Concepto</strong>
+                                                <div class="p-2 mt-1 border rounded bg-light">
+                                                    ${r.facturacion_concepto || "<span class='text-muted'>No data</span>"}
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <i class="me-2 bi bi-chat-left-dots"></i>
+                                                <strong class="text-dark">Comentario de factura</strong>
+                                                <div class="p-2 mt-1 border rounded bg-light">
+                                                    ${r.facturacion_comentarios || "<span class='text-muted'>No data</span>"}
+                                                </div>
+                                            </div>
+                                                
                                         </div>
-                                    </div>
-
-                                    <div class="row mb-4">
-                                        <div class="col-md-6">
-                                            <strong class="text-success">Costo de reparación</strong>
-                                            <div class="p-2 mt-1 border rounded bg-light">
-                                                ${r.costo_tecnico || "<span class='text-muted'>No data</span>"}
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <strong class="text-success">Costo de cobro a cliente</strong>
-                                            <div class="p-2 mt-1 border rounded bg-light">
-                                                ${r.costo_cliente || "<span class='text-muted'>No data</span>"}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-4">
-                                        <div class="col-md-6">
-                                            <strong class="text-success">Facturacion</strong>
-                                            <div class="p-2 mt-1 border rounded bg-light">
-                                                ${ (r.facturacion == 0) ? 'No' : 'Si'  || "<span class='text-muted'>No data</span>"}
-                                            </div>
+                                    </fieldset>
                                             
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <strong class="text-success">Fecha limite de pago</strong>
-                                            <div class="p-2 mt-1 border rounded bg-light">
-                                                ${r.fecha_limite_pago || "<span class='text-muted'>No data</span>"}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <strong class="text-success"><i class="me-2"></i>Estatus de reparacion</strong>
+                                    <div class="mb-1">
+                                        <i class="me-2 bi bi-arrow-bar-right"></i>
+                                        <strong class="text-dark"><i class="me-2"></i>Estatus de reparacion</strong>
                                         <div class="p-2 mt-1 border rounded bg-light">
                                             ${r.asignacion_status || "<span class='text-muted'>No data</span>"}
                                         </div>
                                     </div>
 
-                                    <div class="mb-4">
-                                        <strong class="text-success"><i class="me-2"></i>Comentarios</strong>
+                                    <div class="mb-1">
+                                        <i class="me-2 bi bi-chat-left-dots"></i>
+                                        <strong class="text-dark"><i class="me-2"></i>Comentarios</strong>
                                         <div class="p-2 mt-1 border rounded bg-light">
                                             ${r.asignacion_comentarios || "<span class='text-muted'>No data</span>"}
                                         </div>
                                     </div>
-
                                 </div>
-                                
                             </div>
                         </div>`
                         : ``
