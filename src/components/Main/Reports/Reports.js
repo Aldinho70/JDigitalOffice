@@ -846,6 +846,8 @@ const assigTech = async (id) => {
         const r = res.data.mensaje[0];
         
         AssignationTechnical( r )
+        console.log(r);
+        
         
     } catch (error) {
         

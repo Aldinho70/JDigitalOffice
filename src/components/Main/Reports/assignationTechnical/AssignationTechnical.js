@@ -389,7 +389,12 @@ const editAssignationTechnical = async ( id, id_facturacion ) => {
         if (response.status !== 'ok') throw new Error();
         console.log( 'Edicion de asignacion', response );
         
-        response = await editFacturation( payload )
+        if( payload.id == null ){
+            response = await saveFacturation( payload )
+        }else{
+            response = await editFacturation( payload )
+        }
+
         if (response.status !== 'ok') throw new Error();
         console.log( 'Edicion de facturacion', response );
         
