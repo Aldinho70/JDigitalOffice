@@ -179,8 +179,6 @@ export const viewReport = async (id) => {
 
         const col_class = (r.nombre_tecnico != null) ? 'col-4' : 'col-6';
         
-        console.log(r);
-        
         // HTML final del reporte
         const html = `
             <div class="container-fluid">
@@ -846,7 +844,6 @@ const assigTech = async (id) => {
         );
     
         const r = res.data.mensaje[0];
-        console.log(r);
         
         AssignationTechnical( r )
         

@@ -63,10 +63,10 @@ export const AssignationTechnical = async ( data ) => {
                                         : `<div class="col-md-6">
                                                 <label class="form-label">Facturacion</label>
                                                 <select class="form-select" name="facturacion" >
-                                                    <option value="0" ${data.facturacion == 0 ? 'selected' : ''}>
+                                                    <option value="0" ${data.facturacion == null ? 'selected' : ''}>
                                                         No
                                                     </option>
-                                                    <option value="1" ${data.facturacion === 1 ? 'selected' : ''}>
+                                                    <option value="1" ${data.facturacion != null ? 'selected' : ''}>
                                                         Si
                                                     </option>
                                                 </select>
@@ -75,7 +75,7 @@ export const AssignationTechnical = async ( data ) => {
                                     
                                 </div>
 
-                                <div class="collapse pt-2" id="collapseExample">
+                                <div class="${ (data.facturacion == null) ? 'collapse' : '' } pt-2" id="collapseExample">
                                     <div class="card card-body">
                                         <div class="row mb-3">
                                             <div class="col-md-6 p-2">
@@ -110,22 +110,37 @@ export const AssignationTechnical = async ( data ) => {
 
                                             <div class="col-md-6 p-2">
                                                 <label class="form-label">Folio</label>
-                                                <input type="input" class="form-control" name="folio" >
+                                                <input type="input" ${ (data.facturacion_folio != null) ? `value="${data.facturacion_folio}"` : `` } class="form-control" name="folio" >
                                             </div>
     
-                                            <div class="col-md-6 p-2">
+                                            <div class="col-md-3 p-2">
                                                 <label class="form-label">Fecha limite de pago</label>
                                                 <input type="date" class="form-control" name="fecha_limite_pago" ${ (data.fecha_limite_pago != null) ? `value="${data.fecha_limite_pago}"` : `` } >
                                             </div>
 
+                                            <div class="col-md-3 p-2">
+                                                <label class="form-label">Fecha de pago</label>
+                                                <input type="date" class="form-control" name="fecha_pago" ${ (data.facturacion_fecha_pago != null) ? `value="${data.facturacion_fecha_pago}"` : `` } >
+                                            </div>
+
                                             <div class="col-md-6 p-2">
                                                 <label class="form-label">Concepto de cobro</label>
-                                                <input type="input" class="form-control" name="concepto" >
+                                                <input type="input" class="form-control" name="concepto" ${ (data.facturacion_concepto != null) ? `value="${data.facturacion_concepto}"` : `` }>
+                                            </div>
+
+                                            <div class="col-md-6 p-2">
+                                                <label class="form-label">Estatus de cobro</label>
+                                                <select class="form-select" name="status_pago" >
+                                                    <option value="pendiente" ${ data.facturacion_status == 'pendiente' ? 'selected' : '' } >Pendiente de pago</option>
+                                                    <option value="pagado" ${ data.facturacion_status == 'pagado' ? 'selected' : '' }>Factura pagada</option>
+                                                    <option value="vencido" ${ data.facturacion_status == 'vencido' ? 'selected' : '' }>vencido</option>
+                                                    <option value="cancelado" ${ data.facturacion_status == 'cancelado' ? 'selected' : '' }>cancelado</option>
+                                                </select>
                                             </div>
 
                                             <div class="mb-3">
-                                                <label class="form-label">Comentarios</label>
-                                                <textarea class="form-control" name="comentarios_facturacion" rows="3"></textarea>
+                                                <label class="form-label">Comentarios de factura</label>
+                                                <textarea class="form-control" name="comentarios_facturacion" rows="3">${ (data.facturacion_comentarios != null) ? data.facturacion_comentarios : `` }</textarea>
                                             </div>
 
                                             <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" onClick="clearFactura()" >
@@ -138,7 +153,7 @@ export const AssignationTechnical = async ( data ) => {
 
                             <div class="mb-3">
                                 <label class="form-label">Estado de reparacion</label>
-                                <select class="form-select" name="asignacion_status" required>
+                                <select class="form-select" name="asignacion_status" >
                                     <option value="" disabled ${data.asignacion_status == null ? 'selected' : ''}>
                                         Seleccione estado
                                     </option>
@@ -167,7 +182,7 @@ export const AssignationTechnical = async ( data ) => {
                             <div class="text-end">
                                 <button class="btn btn-secondary me-2" type="reset">Limpiar</button>
                                 ${ data.costo_cliente != null 
-                                    ? `<button class="btn btn-info" type="button" onClick="editAssignationTechnical(${data.id_asignacion})">Editar</button>` 
+                                    ? `<button class="btn btn-info" type="button" onClick="editAssignationTechnical(${data.id_asignacion}, ${data.facturacion_id})">Editar</button>` 
                                     : `<button class="btn btn-success" type="submit">Guardar</button>`
                                 }
                                 
@@ -340,11 +355,13 @@ $(document).on("submit", "#form-asignacion", async function (e) {
     // }
 });
 
-const editAssignationTechnical = async ( id ) => {
+const editAssignationTechnical = async ( id, id_facturacion ) => {
     const form = $("#form-asignacion");
     const msgBox = $("#msg-response-asignacion");
 
     const payload = {
+        id_asignacion: id,
+        id: id_facturacion,
         ticket_id: form.find('[name="id_ticket"]').val(),
         tecnico_id: $("#select-Tecnico").val(),
         unidad: form.find('[name="unidad"]').val(),
@@ -354,22 +371,28 @@ const editAssignationTechnical = async ( id ) => {
         costo_cliente: form.find('[name="costo_cliente"]').val(),
         facturacion: ( form.find('[name="folio"]').val() ? 'si' : 'no'),
         fecha_limite_pago: form.find('[name="fecha_limite_pago"]').val(),
+        fecha_pago: form.find('[name="fecha_pago"]').val(),
         folio: form.find('[name="folio"]').val() ?? '',
         concepto: form.find('[name="concepto"]').val() ?? '',
+        status: form.find('[name="asignacion_status"]').val() ?? '',
         tipo_cobro: 'servicio',
         comentarios_facturacion: form.find('[name="comentarios_facturacion"]').val() ?? '',
+        status_pago: form.find('[name="status_pago"]').val() ?? '',
         comentarios: form.find('[name="comentarios"]').val()
     };
 
-    // console.log(payload);
-    
-    try {
-        const response = await request(
-            'http://ws4cjdg.com//JDigitalReports/src/api/routes/assignationTechnical/editAssignationTechnical.php',
-            'POST',
-            payload
-        );
+    console.log(payload);
 
+    try {
+
+        let response = await editAssignation( payload )
+        if (response.status !== 'ok') throw new Error();
+        console.log( 'Edicion de asignacion', response );
+        
+        response = await editFacturation( payload )
+        if (response.status !== 'ok') throw new Error();
+        console.log( 'Edicion de facturacion', response );
+        
         if (response.status === 'ok') {
             msgBox.html(`
                 <div class="alert alert-success alert-dismissible fade show">
@@ -392,14 +415,54 @@ const editAssignationTechnical = async ( id ) => {
         } else {
             throw new Error();
         }
-
-    } catch (err) {
+        
+    } catch (error) {
+        console.log(error);
         msgBox.html(`
             <div class="alert alert-danger">
                 Error al guardar la asignación.
             </div>
         `);
+        
     }
+    
+    // try {
+    //     const response = await request(
+    //         'http://ws4cjdg.com//JDigitalReports/src/api/routes/assignationTechnical/editAssignationTechnical.php',
+    //         'POST',
+    //         payload
+    //     );
+
+    //     if (response.status === 'ok') {
+    //         msgBox.html(`
+    //             <div class="alert alert-success alert-dismissible fade show">
+    //                 Asignación guardada correctamente.
+    //                 <button class="btn-close" data-bs-dismiss="alert"></button>
+    //             </div>
+    //         `);
+
+    //         setTimeout(() => {
+    //             bootstrap.Modal.getInstance(
+    //                 document.getElementById("modal_AssignationTechnical")
+    //             ).hide();
+
+    //             bootstrap.Modal.getInstance(
+    //                 document.getElementById("ReportFullView")
+    //             ).hide();
+
+    //             viewReport(form.find('[name="id_report"]').val())
+    //         }, 2000);
+    //     } else {
+    //         throw new Error();
+    //     }
+
+    // } catch (err) {
+    //     msgBox.html(`
+    //         <div class="alert alert-danger">
+    //             Error al guardar la asignación.
+    //         </div>
+    //     `);
+    // }
     
 }
 window.editAssignationTechnical = editAssignationTechnical;
@@ -411,7 +474,11 @@ const clearFactura = () => {
     form.find('[name="costo_cliente"]').val('')
     form.find('[name="facturacion"]').val('')
     form.find('[name="fecha_limite_pago"]').val('')
-    form.find('folio').val('')
+    form.find('[name="fecha_pago"]').val('')
+    form.find('[name="concepto"]').val('')
+    form.find('[name="status_pago"]').val('')
+    form.find('[name="folio"]').val('')
+    form.find('[name="comentarios_facturacion"]').val('')
 }
 window.clearFactura = clearFactura
 
