@@ -381,8 +381,6 @@ const editAssignationTechnical = async ( id, id_facturacion ) => {
         comentarios: form.find('[name="comentarios"]').val()
     };
 
-    console.log(payload);
-
     try {
 
         let response = await editAssignation( payload )

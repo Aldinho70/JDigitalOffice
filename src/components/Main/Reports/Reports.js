@@ -176,6 +176,8 @@ export const viewReport = async (id) => {
         );
 
         const r = res.data.mensaje[0];
+        console.log(r);
+        
 
         const col_class = (r.nombre_tecnico != null) ? 'col-4' : 'col-6';
         
@@ -358,10 +360,10 @@ export const viewReport = async (id) => {
                                 <!-- EStado del reporte -->
                                 <label class="form-label fw-bold mt-3">Estado del reporte</label>
                                 <select id="editEstado" class="form-select">
-                                    <option value="pendiente">Pendiente</option>
-                                    <option value="en_proceso">En proceso</option>
-                                    <option value="Terminado">Terminado</option>
-                                    <option value="Rechazado">Rechazado</option>
+                                    <option value="pendiente" ${ (r.estado == 'Pendiente') ? 'selected' : '' } >Pendiente</option>
+                                    <option value="en_proceso" ${ (r.estado == 'en_proceso') ? 'selected' : '' } >En proceso</option>
+                                    <option value="Terminado" ${ (r.estado == 'Terminado') ? 'selected' : '' } >Terminado</option>
+                                    <option value="Rechazado" ${ (r.estado == 'Rechazado') ? 'selected' : '' } >Rechazado</option>
                                 </select>
 
                                 <div id="msg-response" class="mt-3"></div>
@@ -532,34 +534,39 @@ export const viewReport = async (id) => {
         $("#btnGuardarSoporte").on("click", async () => {
 
             const msgBox = $("#msg-response");
-            const payload = {
+           const payload = {
                 id: r.id_ticket,
-                comentario_soporte: $("#editComentarioSoporte").val(),
-                accion: $("#editAccion").val(),
-                solucionado: $("#editSolucionado").val(),
-                resolucion: $("#editResolucion").val(),
-                estado: $("#editEstado").val(),
+                comentario_soporte: $("#editComentarioSoporte").val() || 'N/A',
+                accion: $("#editAccion").val() || 'N/A',
+                solucionado: $("#editSolucionado").val() || 'N/A',
+                resolucion: $("#editResolucion").val() || 'N/A',
+                estado: $("#editEstado").val() || 'N/A',
             };
-
             console.log(payload);
             
             try {
-                await axios.post(
+                let response = await axios.post(
                     "http://ws4cjdg.com/JDigitalReports/src/api/routes/tickets/editTicketById.php",
                     payload
                 );
 
-                msgBox.html(`
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>Éxito:</strong> El reporte fue guardado correctamente.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                `);
+                if( response.data.status == 'ok' ){
+                    msgBox.html(`
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>Éxito:</strong> El reporte fue guardado correctamente.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    `);
+    
+                    setTimeout(() => {
+                        viewReport(r.id)
+                        modal.hide()
+                    }, 1500);
+                }else{
+                    console.log(response);
+                    
+                }
 
-                setTimeout(() => {
-                    viewReport(r.id)
-                    modal.hide()
-                }, 1500);
             } catch (e) {
                 msgBox.html(`
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
