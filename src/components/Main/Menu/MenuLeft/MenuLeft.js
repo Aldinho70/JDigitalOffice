@@ -4,6 +4,7 @@ import { Dashboard, initDashboard } from "../../Dashboard/Dashboard.js";
 import { Reports, loadReportsTable } from "../../Reports/Reports.js";
 import { ReportsCards, loadReportsCards } from "../../Reports/ReportCards/ReportCard.js";
 import { AddReports, loadUnitsSelect2, loadTypeFailureSelect2 } from "../../Reports/AddReports/AddReports.js";
+import { FacturasCards, loadFacturasCards } from "../../Info/Facturation/Facturacion.js";
 
 export const MenuLeft = () => {
   return `
@@ -19,6 +20,10 @@ export const MenuLeft = () => {
 
       <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('3')" data-title="Reportes">
         <i class="bi bi-file-bar-graph fs-4"></i>
+      </button>
+
+      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('7')" data-title="Facturas">
+        <i class="bi bi bi-cash-coin fs-4"></i>
       </button>
 
       <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('6')" data-title="Calendario">
@@ -65,6 +70,11 @@ export const changeView = (id) => {
 
         case "6":
             root.innerHTML = Calendar();
+            break;
+
+        case "7":
+            root.innerHTML = FacturasCards();
+            loadFacturasCards();
             break;
 
         default:
