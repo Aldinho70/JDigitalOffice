@@ -1,5 +1,6 @@
 import { changeView } from "../Menu/MenuLeft/MenuLeft.js";
 import { AssignationTechnical, initAssignationTechnical } from "./assignationTechnical/AssignationTechnical.js";
+import { loadReportsCards } from "./ReportCards/ReportCard.js";
 
 export const Reports = () => {
     return `
@@ -828,7 +829,8 @@ const confirmDelete = async (id) => {
 
             // refrescar la tabla
             if (typeof loadReportsTable === "function") {
-                loadReportsTable();
+                loadReportsTable('allReports');
+                loadReportsCards('allReports')
             }
         }, 1000);
 
