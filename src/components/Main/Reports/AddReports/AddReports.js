@@ -18,12 +18,12 @@ export const AddReports = () => {
             </div>
 
             <div class="row mb-3">
-                <div class="">
+                <!--<div class="">
                     <label class="form-label ">Unidad</label>
                     <select id="select-unidad" class="form-select" name="unidades" required></select>
-                </div>
+                </div>-->
 
-                <div class="col-md-6  visually-hidden">
+                <div class="col-md-12">
                     <label class="form-label">Nombre Unidad</label>
                     <input type="text" class="form-control" name="nombreUnidad" id="nombreUnidad" required>
                 </div>
@@ -172,7 +172,7 @@ $(document).on("submit", "#form-reporte", async function (e) {
     const data = {
         monitorista: $("input[name='monitorista']").val(),
         cliente: $("input[name='cliente']").val(),
-        Idunidad: $("#select-unidad").val(),
+        Idunidad: $("#select-unidad").val() ?? '000000',
         nombreUnidad: $("input[name='nombreUnidad']").val(),
         tipoReporte: $("#select-type-failure").val(),
         comentario: $("textarea[name='comentario']").val()
