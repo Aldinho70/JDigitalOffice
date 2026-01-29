@@ -4,75 +4,206 @@ import { loadReportsCards } from "./ReportCards/ReportCard.js";
 
 export const Reports = () => {
     return `
-    <div class="p-3">
-    
-      <table id="tblReports" class="table table-striped table-hover w-100">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Fecha</th>
-            <th>Gestor</th>
-            <th>Cliente</th>
-            <th>Unidad</th>
-            <th>Tipo</th>
-            <th>Status</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  `;
+        <div class="">
+
+            <div class="card shadow-sm border-0">
+
+                <!-- HEADER 
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0 fw-semibold">
+                            <i class="bi bi-ticket-perforated me-1"></i>
+                            Reportes de Soporte
+                        </h6>
+                        <small class="text-muted">Gestión y seguimiento de tickets</small>
+                    </div>
+                </div>
+                -->
+
+                <!-- BODY -->
+                <div class="card-body p-2">
+                    <table id="tblReports" class="table table-hover align-middle mb-0 w-100">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Gestor</th>
+                                <th>Cliente</th>
+                                <th>Unidad</th>
+                                <th>Tipo</th>
+                                <th class="text-center">
+                                    <i class="bi bi-person-workspace"
+                                       data-bs-toggle="tooltip"
+                                       title="Estatus soporte">
+                                    </i>
+                                </th>
+                                <th class="text-center">
+                                    <i class="bi bi-headset"
+                                       data-bs-toggle="tooltip"
+                                       title="Estatus técnico">
+                                    </i>
+                                </th>
+                                <th class="text-center">
+                                    <i class="bi bi-cash-coin"
+                                       data-bs-toggle="tooltip"
+                                       title="Estatus factura">
+                                    </i>
+                                </th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    `;
 };
 
-export const loadReportsTable = async ( filter ) => {
+
+export const loadReportsTable = async (filter) => {
     try {
         const url = `http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/viewReportsTickets.php?filter=${filter}`;
         const resp = await fetch(url);
         const data = await resp.json();
 
-        // Por si el endpoint envía un solo objeto en lugar de array
         const rows = Array.isArray(data) ? data : [data];
+        console.log(data);
+        
 
-        // Limpiar instancia previa
+        // Configuración visual de estados
+        const estadosUI = {
+            Pendiente: {
+                icon: 'bi-x-circle-fill',
+                color: 'text-danger',
+                tooltip: 'Asunto pendiente'
+            },
+            en_proceso: {
+                icon: 'bi-clock-fill',
+                color: 'text-warning',
+                tooltip: 'En proceso'
+            },
+            default: {
+                icon: 'bi-check-circle-fill',
+                color: 'text-success',
+                tooltip: 'Asunto resuelto'
+            }
+        };
+
+        const tecnicoUI = {
+            pendiente: {
+                icon: 'bi-x-circle-fill',
+                color: 'text-danger',
+                tooltip: 'Pendiente por atender'
+            },
+            sin_asignacion: {
+                icon: 'bi-x-circle-fill',
+                color: 'text-danger',
+                tooltip: 'Sin tecnico asignado'
+            },
+            atendido: {
+                icon: 'bi-person-check-fill',
+                color: 'text-success',
+                tooltip: 'Terminado'
+            },
+            default: {
+                icon: 'bi-person-x-fill',
+                color: 'text-danger',
+                tooltip: 'Sin asignación'
+            }
+        };
+
+        const facturaUI = {
+            pendiente: {
+                icon: 'bi-cash-coin',
+                color: 'text-danger',
+                tooltip: 'Factura pendiente'
+            },
+            pagada: {
+                icon: 'bi-cash-stack',
+                color: 'text-success',
+                tooltip: 'Factura pagada'
+            },
+            default: {
+                icon: 'bi-x-circle-fill',
+                color: 'text-danger',
+                tooltip: 'Sin facturar'
+            }
+        };
+
+
         if ($.fn.DataTable.isDataTable("#tblReports")) {
             $("#tblReports").DataTable().destroy();
         }
 
-        // Poblar manualmente el tbody
         const tbody = document.querySelector("#tblReports tbody");
-        
-        tbody.innerHTML = rows.map(r => `
-            <tr class="">
+
+        tbody.innerHTML = rows.map(r => {
+            const estado = estadosUI[r.estado] ?? estadosUI.default;
+
+            const tecnicoEstado = !r.nombre_tecnico
+                ? tecnicoUI.sin_asignacion
+                : (r.asignacion_status === 'terminado'
+                    ? tecnicoUI.atendido
+                    : tecnicoUI.pendiente);
+
+
+            const facturaEstado = (r.facturacion_status == 'pagado') 
+                ? facturaUI.pagada 
+                : (r.facturacion_status == 'pendiente')
+                    ? facturaUI.pendiente
+                    : facturaUI.default;
+
+
+            return `
+            <tr>
                 <td>${r.id}</td>
-                <td>${r.fechaReporte}</td>
+                <td>${r.fechaReporte.split(' ')[0]}</td>
                 <td>${r.monitorista}</td>
                 <td>${r.cliente}</td>
                 <td>${r.nombreUnidad}</td>
                 <td>${r.tipoReporte}</td>
-                <td>${r.estado}</td>
+                <td class="table-info text-center">
+                    <i class="bi ${estado.icon} ${estado.color}"
+                       data-bs-toggle="tooltip"
+                       title="${estado.tooltip}">
+                    </i>
+                </td>
+                <td class="table-warning text-center">
+                    <i class="bi ${tecnicoEstado.icon} ${tecnicoEstado.color}"
+                    data-bs-toggle="tooltip"
+                    title="${tecnicoEstado.tooltip}">
+                    </i>
+                </td>
+                <td class="table-success text-center">
+                    <i class="bi ${facturaEstado.icon} ${facturaEstado.color}"
+                    data-bs-toggle="tooltip"
+                    title="${facturaEstado.tooltip}">
+                    </i>
+                </td>
                 <td class="text-center">
-                    <button class="btn btn-sm btn-primary me-1" data-id="${r.Idunidad}" onClick="viewReport('${r.id}')">
+                    <button class="btn btn-sm btn-primary me-1" onClick="viewReport('${r.id}')">
                         <i class="bi bi-eye"></i>
                     </button>
-                    <button class="btn btn-sm btn-warning me-1" data-id="${r.id}" onClick="editReport('${r.id}')">
+                    <button class="btn btn-sm btn-warning me-1" onClick="editReport('${r.id}')">
                         <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button class="btn btn-sm btn-danger" data-id="${r.id}" onClick="deleteReport('${r.id}')">
+                    <button class="btn btn-sm btn-danger" onClick="deleteReport('${r.id}')">
                         <i class="bi bi-trash"></i>
                     </button>
                 </td>
             </tr>
-        `).join("");
+            `;
+        }).join("");
 
-        // Inicializar DataTable
         $("#tblReports").DataTable({
             responsive: true,
             order: [[0, 'desc']],
             pageLength: 10,
             scrollY: "65vh",
             scrollCollapse: true,
-            paging: true,
             language: {
                 url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-MX.json"
             },
@@ -81,46 +212,25 @@ export const loadReportsTable = async ( filter ) => {
                 {
                     text: 'Nuevo reporte',
                     className: 'btn btn-success',
-                    action: function () {
-                        changeView('4')
-                    }
+                    action: () => changeView('4')
                 },
                 {
                     text: 'Cambiar vista a panel',
                     className: 'btn btn-warning',
-                    action: function () {
-                        changeView('3')
-                    }
+                    action: () => changeView('3')
                 }
-            ],
-            createdRow: function (row, data) {
-                // estado = col 6
-                if (data[6] == "Pendiente" || data[6] == "pendiente") {
-                    $('td', row).eq(6).addClass("bg-danger text-white");
-                }
+            ]
+        });
 
-                if (data[6] == "Terminado") {
-                    $('td', row).eq(6).addClass("bg-success text-white");
-                }
+        // Activar tooltips
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
 
-                if (data[6] == "en_proceso") {
-                    $('td', row).eq(6).addClass("bg-warning text-white");
-                }
-
-                if (data.estado === "Rechazado") {
-                    $('td', row).eq(6).addClass("bg-secondary text-white");
-                }
-
-                if (data.estado === "Activado") {
-                    $('td', row).eq(6).addClass("bg-warning text-info");
-                }
-            }
-        }
-        );
     } catch (err) {
         console.error("Error cargando datos:", err);
     }
 };
+
 
 export const viewReport = async (id) => {
 
@@ -424,9 +534,9 @@ export const viewReport = async (id) => {
                                     <fieldset class="border border-warning rounded p-1 position-relative">
                                         <legend class="float-none w-auto fw-semibold text-bg-warning">Facturacion</legend>
 
-                                        <button class="btn btn-sm btn-warning position-absolute m-1" onClick="viewFacturation(${r.facturacion_id})" style="left: 400px; top: -20px;">
+                                        <!--<button class="btn btn-sm btn-warning position-absolute m-1" onClick="viewFacturation(${r.facturacion_id})" style="left: 400px; top: -20px;">
                                             <i class="bi bi-eye"></i> Ver Factura
-                                        </button>
+                                        </button>-->
 
                                         <div class="row mb-1">
                                             <div class="col-md-6">

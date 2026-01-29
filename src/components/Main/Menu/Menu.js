@@ -13,8 +13,8 @@ export const Menu = () => {
 
                 <!-- CONTENIDO -->
                 <div class="col-11 offset-1 " id="RightContent">
-                    ${Dashboard()}
-                    ${initDashboard()}
+                    ${Reports()}
+                    ${loadReportsTable()}
                 </div>
             </div>
         </div>
