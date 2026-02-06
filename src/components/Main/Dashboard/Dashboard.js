@@ -68,7 +68,7 @@ export const Dashboard = () => {
                         </div>
                     </div>
 
-                    <div class="col-md-2">
+                    <div class="col-md-2" onClick="viewKpisFacturation('pagado')">
                         <div class="kpi-card kpi-success-soft">
                             <h4 id="root-kpi-pagado">0</h4>
                             <span>Pagado</span>
@@ -252,7 +252,7 @@ const getKpisFacturacion = async () => {
             });
         }
 
-        console.log(kpis);
+        console.log( kpis );
         
         return kpis;
 
@@ -350,6 +350,31 @@ const viewReports = ( type ) => {
     
 }
 window.viewReports = viewReports
+
+const viewKpisFacturation = async ( filter ) => {
+    const response = await request(
+        'http://ws4cjdg.com/JDigitalReports/src/api/routes/utils/getQuery.php',
+        'POST',
+        {
+            query: `
+            SELECT *
+            FROM cobros_clientes
+            WHERE status_pago = '${filter}';
+            `
+        }
+    );
+
+    console.log('fun: viewKpisFacturation:');
+
+    if (response.status === 'ok') {
+        console.log(response.mensaje);
+        
+        // response.mensaje.forEach(el => {
+        //     kpis[el.status_pago] = el.repeticiones;
+        // });
+    }
+}
+window.viewKpisFacturation = viewKpisFacturation;
 
 const initChartClient = (dataClientes) => {
 
