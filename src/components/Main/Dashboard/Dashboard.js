@@ -6,166 +6,187 @@ export const Dashboard = () => {
         <div class="container-fluid p-4 dashboard">
 
     <!-- SECCIÓN: OPERACIÓN -->
-    <div class="mb-4">
-        <h5 class="section-title">
-            <i class="bi bi-gear-wide-connected me-2"></i>Operación
-        </h5>
+            <div class="mb-4">
+                <h5 class="section-title">
+                    <i class="bi bi-gear-wide-connected me-2"></i>Operación
+                </h5>
 
-        <div class="row g-3">
-            <div class="col-md-3">
-                <div class="kpi-card kpi-primary" onclick="viewReports('all_Reports')">
-                    <div class="kpi-icon"><i class="bi bi-clipboard-data"></i></div>
-                    <div>
-                        <h3 id="root-kpi-all-reports">0</h3>
-                        <span>Reportes totales</span>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="kpi-card kpi-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewReports('all_Reports')">
+                            <div class="kpi-icon"><i class="bi bi-clipboard-data"></i></div>
+                            <div>
+                                <h3 id="root-kpi-all-reports">0</h3>
+                                <span>Reportes totales</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="kpi-card kpi-success" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewReports('atendidas')">
+                            <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
+                            <div>
+                                <h3 id="root-kpi-reports-attend">0</h3>
+                                <span>Atendidos</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="kpi-card kpi-danger" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewReports('noAtendidas')">
+                            <div class="kpi-icon"><i class="bi bi-x-circle"></i></div>
+                            <div>
+                                <h3 id="root-kpi-reports-not-attend">0</h3>
+                                <span>No atendidos</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="kpi-card kpi-warning">
+                            <div class="kpi-icon"><i class="bi bi-speedometer2"></i></div>
+                            <div>
+                                <h3 id="root-kpi-porcent">0%</h3>
+                                <span>Eficiencia</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="kpi-card kpi-success" onclick="viewReports('atendidas')">
-                    <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
-                    <div>
-                        <h3 id="root-kpi-reports-attend">0</h3>
-                        <span>Atendidos</span>
+            <!-- SECCIÓN: FACTURACIÓN -->
+            <div class="mb-4">
+                <h5 class="section-title">
+                    <i class="bi bi-cash-stack me-2"></i>Facturación
+                </h5>
+
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        <div class="kpi-card kpi-neutral">
+                            <h4 id="root-kpi-pendiente_pago">0</h4>
+                            <span>Pendiente pago</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="kpi-card kpi-success-soft">
+                            <h4 id="root-kpi-pagado">0</h4>
+                            <span>Pagado</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="kpi-card kpi-primary-soft">
+                            <h4 id="root-kpi-facturados">0</h4>
+                            <span>Facturados</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="kpi-card kpi-danger-soft">
+                            <h4 id="root-kpi-sin_factura">0</h4>
+                            <span>Sin factura</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="kpi-card kpi-info-soft">
+                            <h4 id="root-kpi-tecnico">0</h4>
+                            <span>Asignados</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="kpi-card kpi-neutral">
+                            <h4 id="root-kpi-sin_asignacion">0</h4>
+                            <span>Sin asignar</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="kpi-card kpi-danger" onclick="viewReports('noAtendidas')">
-                    <div class="kpi-icon"><i class="bi bi-x-circle"></i></div>
-                    <div>
-                        <h3 id="root-kpi-reports-not-attend">0</h3>
-                        <span>No atendidos</span>
+            <!-- GRÁFICAS -->
+            <div class="row g-4">
+                <div class="col-md-2">
+                    <div class="chart-box h-100">
+                        <h6 class="fw-semibold fs-6">Tecnicos mas solicitados</h6>
+
+                        <ul class="list-group list-group-flush small">
+                            <li class="list-group-item d-flex justify-content-between">
+                                Alberto Metlich
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                Telcel
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                Juanito
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                Tec Dgo Javier Jurado
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="chart-box h-100">
+                        <h6 class="fw-semibold fs-6">Unidad con mas reportes</h6>
+
+                        <ul class="list-group list-group-flush small">
+                            <li class="list-group-item d-flex justify-content-between">
+                                092 - I
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                TKF 28 32UU7F
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                Bonanza #3
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                P-8095**
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                GDL-C-235
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="chart-box">
+                        <h6>Clientes con más reportes</h6>
+                        <div id="chart-donut-client" style="height:280px"></div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="chart-box">
+                        <h6>Fallas más frecuentes</h6>
+                        <div id="chart-donut-failure" style="height:280px"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="kpi-card kpi-warning">
-                    <div class="kpi-icon"><i class="bi bi-speedometer2"></i></div>
-                    <div>
-                        <h3 id="root-kpi-porcent">0%</h3>
-                        <span>Eficiencia</span>
+            <div class="offcanvas  offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel" id="offcanvas-status">
+                <div class="offcanvas-header kpi-canvas-header">
+    
+                    <div class="kpi-canvas-title">
+                        <i id="canvas-icon" class="bi bi-clipboard-data"></i>
+                        <div>
+                            <div id="title-canvas" class="kpi-title">All Reports</div>
+                        </div>
                     </div>
+
+                    <button type="button"
+                            class="btn btn-sm btn-danger kpi-close-btn"
+                            data-bs-dismiss="offcanvas">
+                        <i class="bi bi-x-lg me-1"></i> Cerrar
+                    </button>
+
                 </div>
+
+                <div class="offcanvas-body " id="kpi-offcanvas-content"></div>
             </div>
+
         </div>
-    </div>
-
-    <!-- SECCIÓN: FACTURACIÓN -->
-    <div class="mb-4">
-        <h5 class="section-title">
-            <i class="bi bi-cash-stack me-2"></i>Facturación
-        </h5>
-
-        <div class="row g-3">
-            <div class="col-md-2">
-                <div class="kpi-card kpi-neutral">
-                    <h4 id="root-kpi-pendiente_pago">0</h4>
-                    <span>Pendiente pago</span>
-                </div>
-            </div>
-
-            <div class="col-md-2">
-                <div class="kpi-card kpi-success-soft">
-                    <h4 id="root-kpi-pagado">0</h4>
-                    <span>Pagado</span>
-                </div>
-            </div>
-
-            <div class="col-md-2">
-                <div class="kpi-card kpi-primary-soft">
-                    <h4 id="root-kpi-facturados">0</h4>
-                    <span>Facturados</span>
-                </div>
-            </div>
-
-            <div class="col-md-2">
-                <div class="kpi-card kpi-danger-soft">
-                    <h4 id="root-kpi-sin_factura">0</h4>
-                    <span>Sin factura</span>
-                </div>
-            </div>
-
-            <div class="col-md-2">
-                <div class="kpi-card kpi-info-soft">
-                    <h4 id="root-kpi-tecnico">0</h4>
-                    <span>Asignados</span>
-                </div>
-            </div>
-
-            <div class="col-md-2">
-                <div class="kpi-card kpi-neutral">
-                    <h4 id="root-kpi-sin_asignacion">0</h4>
-                    <span>Sin asignar</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- GRÁFICAS -->
-    <div class="row g-4">
-        <div class="col-md-2">
-            <div class="chart-box h-100">
-                <h6 class="fw-semibold fs-6">Tecnicos mas solicitados</h6>
-
-                <ul class="list-group list-group-flush small">
-                    <li class="list-group-item d-flex justify-content-between">
-                        Alberto Metlich
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        Telcel
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        Juanito
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        Tec Dgo Javier Jurado
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="chart-box h-100">
-                <h6 class="fw-semibold fs-6">Unidad con mas reportes</h6>
-
-                <ul class="list-group list-group-flush small">
-                    <li class="list-group-item d-flex justify-content-between">
-                        092 - I
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        TKF 28 32UU7F
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        Bonanza #3
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        P-8095**
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        GDL-C-235
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="chart-box">
-                <h6>Clientes con más reportes</h6>
-                <div id="chart-donut-client" style="height:280px"></div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="chart-box">
-                <h6>Fallas más frecuentes</h6>
-                <div id="chart-donut-failure" style="height:280px"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
     `
 }
 
@@ -324,6 +345,7 @@ const getContField = async (campo) => {
 
 const viewReports = ( type ) => {
     $("#kpi-offcanvas-content").html( Reports() )
+    $("#title-canvas").html( (type).replace(/_/g, '  ').trim().toUpperCase());
     loadReportsTable( type );
     
 }

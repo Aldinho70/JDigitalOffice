@@ -200,6 +200,7 @@ export const loadReportsTable = async (filter) => {
 
         $("#tblReports").DataTable({
             responsive: true,
+            info: false,
             order: [[0, 'desc']],
             pageLength: 10,
             scrollY: "65vh",
