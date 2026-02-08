@@ -1,6 +1,6 @@
 import { MenuLeft } from "./MenuLeft/MenuLeft.js"
 import { Reports, loadReportsTable } from "../Reports/Reports.js"
-import { Dashboard, initDashboard } from "../Dashboard/Dashboard.js"
+import { Dashboard, initDashboard, initKpiPopovers } from "../Dashboard/Dashboard.js"
 
 export const Menu = () => {
     return `
@@ -15,6 +15,7 @@ export const Menu = () => {
                 <div class="col-11 offset-1 " id="RightContent">
                     ${Dashboard()}
                     ${initDashboard()}
+                    ${initKpiPopovers()}
                 </div>
             </div>
         </div>

@@ -1,5 +1,6 @@
-import { Reports, loadReportsTable } from "../Reports/Reports.js"
 import { request } from "../../../Utils/request.js"
+import { Reports, loadReportsTable } from "../Reports/Reports.js"
+import { FacturasCards, loadFacturasCards } from "../Info/Facturation/Facturacion.js"
 
 export const Dashboard = () => {
     return `
@@ -62,28 +63,28 @@ export const Dashboard = () => {
 
                 <div class="row g-3">
                     <div class="col-md-2">
-                        <div class="kpi-card kpi-neutral">
+                        <div class="kpi-card kpi-neutral" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewFacturation('pendiente')" >
                             <h4 id="root-kpi-pendiente_pago">0</h4>
                             <span>Pendiente pago</span>
                         </div>
                     </div>
 
-                    <div class="col-md-2" onClick="viewKpisFacturation('pagado')">
-                        <div class="kpi-card kpi-success-soft">
+                    <div class="col-md-2 kpi-popover" onClick="viewKpisFacturation('pagado')">
+                        <div class="kpi-card kpi-success-soft" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewFacturation('pagado')">
                             <h4 id="root-kpi-pagado">0</h4>
                             <span>Pagado</span>
                         </div>
                     </div>
 
                     <div class="col-md-2">
-                        <div class="kpi-card kpi-primary-soft">
+                        <div class="kpi-card kpi-primary-soft" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewReports('facturados')">
                             <h4 id="root-kpi-facturados">0</h4>
                             <span>Facturados</span>
                         </div>
                     </div>
 
                     <div class="col-md-2">
-                        <div class="kpi-card kpi-danger-soft">
+                        <div class="kpi-card kpi-danger-soft" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewReports('nofacturados')" >
                             <h4 id="root-kpi-sin_factura">0</h4>
                             <span>Sin factura</span>
                         </div>
@@ -108,48 +109,31 @@ export const Dashboard = () => {
             <!-- GRÁFICAS -->
             <div class="row g-4">
                 <div class="col-md-2">
-                    <div class="chart-box h-100">
-                        <h6 class="fw-semibold fs-6">Tecnicos mas solicitados</h6>
+                    <div class="card shadow-sm h-100 border-0 list-card">
+                        <div class="card-body p-3 d-flex flex-column">
+                            <h6 class="card-title fw-semibold mb-3 d-flex align-items-center gap-2">
+                                <i class="bi bi-person-badge text-primary"></i>
+                                Técnicos más solicitados
+                            </h6>
 
-                        <ul class="list-group list-group-flush small">
-                            <li class="list-group-item d-flex justify-content-between">
-                                Alberto Metlich
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between">
-                                Telcel
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between">
-                                Juanito
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between">
-                                Tec Dgo Javier Jurado
-                            </li>
-                        </ul>
+                            <ul class="list-group list-group-flush small list-scroll" id="list_group_technicals"></ul>
+                        </div>
                     </div>
                 </div>
+
                 <div class="col-md-2">
-                    <div class="chart-box h-100">
-                        <h6 class="fw-semibold fs-6">Unidad con mas reportes</h6>
+                    <div class="card shadow-sm h-100 border-0 list-card">
+                        <div class="card-body p-3 d-flex flex-column">
+                            <h6 class="card-title fw-semibold mb-3 d-flex align-items-center gap-2">
+                                <i class="bi bi-truck text-success"></i>
+                                Unidad con más reportes
+                            </h6>
 
-                        <ul class="list-group list-group-flush small">
-                            <li class="list-group-item d-flex justify-content-between">
-                                092 - I
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between">
-                                TKF 28 32UU7F
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between">
-                                Bonanza #3
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between">
-                                P-8095**
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between">
-                                GDL-C-235
-                            </li>
-                        </ul>
+                            <ul class="list-group list-group-flush small list-scroll" id="list_group_units" ></ul>
+                        </div>
                     </div>
                 </div>
+
                 <div class="col-md-4">
                     <div class="chart-box">
                         <h6>Clientes con más reportes</h6>
@@ -215,9 +199,18 @@ export const initDashboard = async () => {
     initChartFailure( res );
 
     res = await getContField('nombreUnidad');
-    console.log( res );
+    if( res.length ){
+        const html = res.map( (unit) => {
+            return `
+                <li class="list-group-item d-flex align-items-center gap-2">
+                    <i class="bi bi-truck"></i>
+                    ${unit.valor}
+                </li>`
+        } )
+        $("#list_group_units").html(html)
+    }
 
-    await getListKpi()
+    await getListKpi();
 }
 
 const getKpisTickets = async () => {
@@ -252,8 +245,6 @@ const getKpisFacturacion = async () => {
             });
         }
 
-        console.log( kpis );
-        
         return kpis;
 
     } catch (error) {
@@ -278,8 +269,6 @@ const getKpisFacturacion2 = async () => {
         );
 
         if (response.status === 'ok') {
-            console.log( response.mensaje[0] );
-            
             return response.mensaje[0];
         }
 
@@ -312,10 +301,17 @@ const getListKpi = async () => {
         if (response.status === 'ok') {
             console.log(response.mensaje);
             
-            // response.mensaje.forEach(el => {
-            //     kpis[el.status_pago] = el.repeticiones;
-            // });
+            const html = response.mensaje.map( (tecnico) => {
+                return `
+                    <li class="list-group-item d-flex align-items-center gap-2">
+                        <i class="bi bi-person-circle"></i>
+                        ${tecnico.nombre_tecnico}
+                    </li>`
+            } )
+            
+            $("#list_group_technicals").html(html)
         }
+
 
     } catch (error) {
         console.error(error);
@@ -351,28 +347,35 @@ const viewReports = ( type ) => {
 }
 window.viewReports = viewReports
 
+const viewFacturation = ( filter ) =>{
+    $("#kpi-offcanvas-content").html( FacturasCards() )
+    $("#title-canvas").html( ( filter ).replace(/_/g, '  ').trim().toUpperCase());
+    loadFacturasCards( filter );
+}
+window.viewFacturation = viewFacturation;
+
 const viewKpisFacturation = async ( filter ) => {
-    const response = await request(
-        'http://ws4cjdg.com/JDigitalReports/src/api/routes/utils/getQuery.php',
-        'POST',
-        {
-            query: `
-            SELECT *
-            FROM cobros_clientes
-            WHERE status_pago = '${filter}';
-            `
-        }
-    );
+    // const response = await request(
+    //     'http://ws4cjdg.com/JDigitalReports/src/api/routes/utils/getQuery.php',
+    //     'POST',
+    //     {
+    //         query: `
+    //         SELECT *
+    //         FROM cobros_clientes
+    //         WHERE status_pago = '${filter}';
+    //         `
+    //     }
+    // );
 
-    console.log('fun: viewKpisFacturation:');
+    // console.log('fun: viewKpisFacturation:');
 
-    if (response.status === 'ok') {
-        console.log(response.mensaje);
+    // if (response.status === 'ok') {
+    //     console.log(response.mensaje);
         
-        // response.mensaje.forEach(el => {
-        //     kpis[el.status_pago] = el.repeticiones;
-        // });
-    }
+    //     // response.mensaje.forEach(el => {
+    //     //     kpis[el.status_pago] = el.repeticiones;
+    //     // });
+    // }
 }
 window.viewKpisFacturation = viewKpisFacturation;
 
@@ -468,5 +471,31 @@ const initChartFailure = (data) => {
 
     credits: { enabled: false }
 });
+
+};
+
+
+// ui/tippy.kpi.js
+export const initKpiPopovers = () => {
+
+    tippy('.kpi-popover', {
+        allowHTML: true,
+        trigger: 'click',
+        placement: 'top',
+        interactive: true,
+        theme: 'light-border',
+        content(reference) {
+
+            const tipo = reference.dataset.kpi;
+
+            return `
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item" onclick="viewKpisFacturation('${tipo}', 'hoy')">Hoy</li>
+                    <li class="list-group-item" onclick="viewKpisFacturation('${tipo}', 'semana')">Esta semana</li>
+                    <li class="list-group-item" onclick="viewKpisFacturation('${tipo}', 'mes')">Este mes</li>
+                </ul>
+            `;
+        }
+    });
 
 };

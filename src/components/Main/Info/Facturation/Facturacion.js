@@ -14,19 +14,23 @@ let currentPage = 1;
 /* =========================
    CONSULTA BACKEND
 ========================= */
-const getFacturas = async () => {
-    const response = await request(
-        'http://ws4cjdg.com/JDigitalReports/src/api/routes/utils/getQuery.php',
-        'POST',
-        { query: "SELECT * FROM cobros_clientes" }
-    );
+const getFacturas = async ( filter = null ) => {
+    try {
+        const response = await request(
+            'http://ws4cjdg.com/JDigitalReports/src/api/routes/utils/getQuery.php',
+            'POST',
+            { query: `SELECT * FROM cobros_clientes ${ (filter) ? `WHERE status_pago = '${filter}'` : '' }` }
+        );
 
-    if (response.status !== 'ok') {
-        alert('Error al obtener facturas');
-        return [];
+        if (response.status !== 'ok') {
+            alert('Error al obtener facturas');
+            return [];
+        }
+
+        return response.mensaje;        
+    } catch (error) {
+        
     }
-
-    return response.mensaje;
 };
 
 /* =========================
@@ -63,9 +67,9 @@ export const FacturasCards = () => {
 /* =========================
    CARGA DE CARDS
 ========================= */
-export const loadFacturasCards = async () => {
+export const loadFacturasCards = async ( filter ) => {
 
-    const data = await getFacturas();
+    const data = await getFacturas( filter );
 
     allFacturas = Array.isArray(data) ? data.reverse() : [];
     filteredFacturas = [...allFacturas];

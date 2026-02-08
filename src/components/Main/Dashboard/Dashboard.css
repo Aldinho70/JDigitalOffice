@@ -5,6 +5,36 @@
 /* #offcanvasBottom{
   height: 70%;
 } */
+.list-card {
+    border-radius: 12px;
+}
+
+.list-scroll {
+    overflow-y: auto;
+    max-height: 180px;
+    padding-right: 6px;
+}
+
+/* Scroll elegante */
+.list-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.list-scroll::-webkit-scrollbar-thumb {
+    background-color: #c9c9c9;
+    border-radius: 10px;
+}
+
+.list-group-item {
+    border: none;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
 
 .offcanvas-bottom {
     height: 93vh !important;
