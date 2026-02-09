@@ -26,6 +26,11 @@ export const MenuLeft = () => {
         <i class="bi bi bi-cash-coin fs-4"></i>
       </button>
 
+      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('7')" data-title="Pago de tecnicos">
+        <span class="material-symbols-outlined">attach_money</span>
+        <span class="material-symbols-outlined">engineering</span>
+      </button>
+
       <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('6')" data-title="Calendario">
         <i class="bi bi-calendar-date fs-4"></i>
       </button>

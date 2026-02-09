@@ -19,7 +19,7 @@ const getFacturas = async ( filter = null ) => {
         const response = await request(
             'http://ws4cjdg.com/JDigitalReports/src/api/routes/utils/getQuery.php',
             'POST',
-            { query: `SELECT * FROM cobros_clientes ${ (filter) ? `WHERE status_pago = '${filter}'` : '' }` }
+            { query: `SELECT cobros_clientes.*,	T.id_reporte FROM cobros_clientes INNER JOIN tickets_soporte AS T ON cobros_clientes.ticket_id = T.id_ticket ${ (filter) ? `WHERE status_pago = '${filter}'` : '' }` }
         );
 
         if (response.status !== 'ok') {
@@ -27,6 +27,8 @@ const getFacturas = async ( filter = null ) => {
             return [];
         }
 
+        console.log(response.mensaje);
+        
         return response.mensaje;        
     } catch (error) {
         
@@ -155,6 +157,8 @@ const facturaCard = (f) => {
 
     const statusColor = statusMap[f.status_pago] || "secondary";
 
+    // const id_report = await getIdReport(f.ticket_id);
+
     return `
         <div class="col-12 col-md-6 col-lg-4 col-xl-3">
             <div class="card h-100 shadow-sm border-start border-4 border-${statusColor}">
@@ -190,17 +194,34 @@ const facturaCard = (f) => {
                 </div>
 
                 <!-- FOOTER -->
-                <div class="card-footer small text-muted">
-                    <div>Expedición: ${f.fecha_expedicion}</div>
-                    <div>Límite pago: ${f.fecha_limite_pago}</div>
-                    ${f.fecha_pago ? `
-                        <div class="text-success">
+                <div class="card-footer small text-muted d-flex justify-content-between">
+                    <div>
+                        <span>Expedición: ${f.fecha_expedicion}</span> <br>
+                        <span>Límite pago: ${f.fecha_limite_pago}</span>
+                        ${f.fecha_pago ? `
+                            <div class="text-success">
                             Pagado: ${f.fecha_pago}
-                        </div>
-                    ` : ``}
+                            </div>
+                            ` : ``}
+                    </div>    
+                    <div>
+                        <button class="btn btn-sm btn-warning" type="button" onClick="viewReport('${ f.id_reporte }')">
+                            <i class="bi bi-eye"></i>
+                            Ver detalles
+                        </button>
+                    </div>    
                 </div>
-
             </div>
         </div>
     `;
 };
+
+
+const getIdReport = async ( id_ticket ) => {
+    
+    const report = await request('http://ws4cjdg.com/JDigitalReports/src/api/routes/utils/getQuery.php', 'post', { "query": `SELECT id_reporte FROM tickets_soporte WHERE id_ticket = ${id_ticket}`})
+    if( report.status == 'ok' ){
+        return report.mensaje[0].id_reporte;
+    }
+    return 0;
+}
