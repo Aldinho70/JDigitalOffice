@@ -76,6 +76,30 @@ class sharedComponents {
         // $("#report-loader").addClass("visually-hidden");
 
     };
+
+    In_Construction = () => {
+        const html =
+            `<div class="container d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+                <div class="text-center p-5 border rounded-4 shadow-sm bg-light">
+                    
+                    <div class="mb-4">
+                    <div class="spinner-border text-warning" style="width: 3rem; height: 3rem;" role="status"></div>
+                    </div>
+
+                    <h3 class="fw-bold mb-3">Sección en construcción</h3>
+                    <p class="text-muted mb-4">
+                    Estamos trabajando para habilitar este módulo muy pronto.
+                    </p>
+
+                    <span class="badge bg-warning text-dark px-3 py-2">
+                    Próximamente
+                    </span>
+
+                </div>
+            </div>`
+
+        return html;
+    }
 }
 
 export const UI = new sharedComponents()

@@ -1,10 +1,11 @@
 import { Config } from "../../Config/Config.js";
 import { Calendar } from "../../Calendar/Calendar.js";
-import { Dashboard, initDashboard } from "../../Dashboard/Dashboard.js";
+import { Technicals } from "../../Info/Technicals/Technicals.js";
 import { Reports, loadReportsTable } from "../../Reports/Reports.js";
+import { Dashboard, initDashboard } from "../../Dashboard/Dashboard.js";
 import { ReportsCards, loadReportsCards } from "../../Reports/ReportCards/ReportCard.js";
-import { AddReports, loadUnitsSelect2, loadTypeFailureSelect2 } from "../../Reports/AddReports/AddReports.js";
 import { FacturasCards, loadFacturasCards } from "../../Info/Facturation/Facturacion.js";
+import { AddReports, loadUnitsSelect2, loadTypeFailureSelect2 } from "../../Reports/AddReports/AddReports.js";
 
 export const MenuLeft = () => {
   return `
@@ -26,8 +27,7 @@ export const MenuLeft = () => {
         <i class="bi bi bi-cash-coin fs-4"></i>
       </button>
 
-      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('7')" data-title="Pago de tecnicos">
-        <span class="material-symbols-outlined">attach_money</span>
+      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('8')" data-title="Pago de tecnicos">
         <span class="material-symbols-outlined">engineering</span>
       </button>
 
@@ -45,46 +45,50 @@ export const MenuLeft = () => {
 
 
 export const changeView = (id) => {
-    const root = document.getElementById("RightContent");
+  const root = document.getElementById("RightContent");
 
-    switch (id) {
-        case "1":
-            root.innerHTML = Dashboard();
-            initDashboard();
-            break;
+  switch (id) {
+    case "1":
+      root.innerHTML = Dashboard();
+      initDashboard();
+      break;
 
-        case "2":
-            root.innerHTML = Reports();
-            loadReportsTable('allReports');
-            break;
+    case "2":
+      root.innerHTML = Reports();
+      loadReportsTable('allReports');
+      break;
 
-        case "3":
-            root.innerHTML = ReportsCards();
-            loadReportsCards('allReports');
-            break;
+    case "3":
+      root.innerHTML = ReportsCards();
+      loadReportsCards('allReports');
+      break;
 
-        case "4":
-            root.innerHTML = AddReports();
-            loadUnitsSelect2();
-            loadTypeFailureSelect2();
-            break;
+    case "4":
+      root.innerHTML = AddReports();
+      loadUnitsSelect2();
+      loadTypeFailureSelect2();
+      break;
 
-        case "5":
-            root.innerHTML = Config();
-            break;
+    case "5":
+      root.innerHTML = Config();
+      break;
 
-        case "6":
-            root.innerHTML = Calendar();
-            break;
+    case "6":
+      root.innerHTML = Calendar();
+      break;
 
-        case "7":
-            root.innerHTML = FacturasCards();
-            loadFacturasCards();
-            break;
+    case "7":
+      root.innerHTML = FacturasCards();
+      loadFacturasCards();
+      break;
 
-        default:
-            root.innerHTML = "<h3>Vista no encontrada</h3>";
-    }
+    case "8":
+      root.innerHTML = Technicals();
+      break;
+
+    default:
+      root.innerHTML = "<h3>Vista no encontrada</h3>";
+  }
 };
 
 

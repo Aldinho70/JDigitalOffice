@@ -4,7 +4,7 @@ import { Dashboard, initDashboard, initKpiPopovers } from "../Dashboard/Dashboar
 
 export const Menu = () => {
     return `
-        <div class="container-fluid">
+        <div class="">
             <div class="row">
                 <!-- SIDEBAR -->
                 <div class="col-1 bg-dark" id="MenuLeft">
@@ -12,7 +12,7 @@ export const Menu = () => {
                 </div>
 
                 <!-- CONTENIDO -->
-                <div class="col-11 offset-1 " id="RightContent">
+                <div class="col-11" id="RightContent">
                     ${Dashboard()}
                     ${initDashboard()}
                     ${initKpiPopovers()}

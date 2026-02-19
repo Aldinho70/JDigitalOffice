@@ -1,10 +1,6 @@
 #MenuLeft {
-  position: fixed;
-  
+  /* position: fixed; */
+  /* max-width: 5%; */
   height: 100vh;      /* altura completa */
   overflow: none;     /* si desea scroll SOLO en el menú (opcional) */
-}
-
-#RightContent {
-   /* equivalente a col-2 */
 }
