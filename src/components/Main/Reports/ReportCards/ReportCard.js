@@ -69,7 +69,7 @@ export const ReportsCards = () => {
 ========================= */
 export const loadReportsCards = async () => {
     try {
-        const url = `http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/viewReportsTickets.php`;
+        const url = `http://ws4cjdg.com/JDigitalReportsV2/src/api/routes/reports/viewReportsTickets.php`;
         const resp = await fetch(url);
         const data = await resp.json();
 
@@ -153,14 +153,15 @@ const initCardsSearch = () => {
    CARD INDIVIDUAL
 ========================= */
 const createReportCard = (r) => {
+    console.log(r);
+    
     const statusMap = {
-        Pendiente: "danger",
-        Terminado: "success",
-        Activado: "warning",
-        Rechazado: "secondary"
+        pending: "danger",
+        completed: "success",
+        in_progress: "warning",
     };
 
-    const statusColor = statusMap[r.estado] || "dark";
+    const statusColor = statusMap[r.status_ticket] || "dark";
 
     return `
         <div class="col-12 col-md-6 col-lg-4 col-xl-3">
@@ -170,10 +171,10 @@ const createReportCard = (r) => {
                 <div class="card-header d-flex justify-content-between align-items-center bg-light">
                     <div class="fw-bold">
                         <i class="bi bi-ticket-perforated me-1 text-${statusColor}"></i>
-                        Ticket #${r.id}
+                        Report #${r.id_report}
                     </div>
                     <span class="badge bg-${statusColor}">
-                    ${r.estado}
+                    ${r.status_ticket}
                     </span>
                 </div>
 
@@ -184,22 +185,22 @@ const createReportCard = (r) => {
                 <div class="d-flex justify-content-between" >
                     <h6 class="fw-bold mb-1">
                         <i class="bi bi-truck me-1"></i>
-                        ${r.nombreUnidad}
+                        ${r.unit_name}
                     </h6>
                     
                     <h6 class="fw-bold mb-1">
                         <i class="bi bi-person me-1"></i>
-                        ${r.monitorista}
+                        ${r.monitor_name}
                     </h6>
 
                 </div>
-                <small class="text-muted d-block">
+                <!--<small class="text-muted d-block">
                     ID Unidad: ${r.Idunidad}
-                </small>
+                </small>-->
 
                 <!-- TIPO -->
                 <span class="badge bg-warning text-dark">
-                    ${r.tipoReporte}
+                    ${r.report_type}
                 </span>
 
                 <hr class="my-2">
@@ -208,45 +209,41 @@ const createReportCard = (r) => {
                 <div class="small mb-2">
                     <div>
                         <i class="bi bi-person me-1"></i>
-                        <strong>Cliente:</strong> ${r.cliente}
+                        <strong>Cliente:</strong> ${r.client_name}
                     </div>
 
-                    ${r.nombre_tecnico ? `
-                        <div>
-                            <i class="bi bi-wrench-adjustable me-1"></i>
-                            <strong>Técnico:</strong> ${r.nombre_tecnico}
-                        </div>
-                    ` : ``}
+                    ${(r.technician_name != null ) 
+                        ? ` <div>
+                                <i class="bi bi-wrench-adjustable me-1"></i>
+                                <strong>Técnico:</strong> ${r.technician_name}
+                            </div>` 
+                        : ``}
                     </div>
 
                     <!-- FECHAS -->
                     <div class="small text-muted">
                         <i class="bi bi-calendar-event me-1"></i>
-                        Reporte: ${r.fechaReporte}
+                        Reporte: ${r.report_date}
                     </div>
 
                     <!-- INDICADORES -->
                     <div class="d-flex flex-wrap gap-1">
-                        ${r.facturacion == 1 ? `<span class="badge bg-success">Facturable</span>` : ``}
-                        ${ ( r.solucionado == 'si' )
-                            ? `<span class="badge bg-success">Solucionado</span>`
-                            : `<span class="badge bg-secondary">No solucionado</span>` 
-                        }
-                        ${r.nombre_tecnico != null ? `<span class="badge bg-info">Asig. Tecnico</span>` : ``}
+                        ${r.is_billable == 1 ? `<span class="badge bg-success">Facturable</span>` : ``}
+                        ${r.assigned_at_technician != null ? `<span class="badge bg-info">Asig. Tecnico</span>` : ``}
                     </div>
                 </div>
 
                 <!-- FOOTER -->
                 <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-                    <button class="btn btn-sm btn-success w-100 me-1" onClick="viewReport('${r.id}')">
+                    <button class="btn btn-sm btn-success w-100 me-1" onClick="viewReport('${r.id_report}')">
                         <i class="bi bi-eye me-1"></i> Ver detalles
                     </button>
 
-                    <button class="btn btn-sm btn-warning" onClick="editReport('${r.id}')">
+                    <!--<button class="btn btn-sm btn-warning" onClick="editReport('${r.id_report}')">
                         <i class="bi bi-pencil-square"></i>
-                    </button>
+                    </button>-->
 
-                    <button class="btn btn-sm btn-danger" onClick="deleteReport('${r.id}')">
+                    <button class="btn btn-sm btn-danger" onClick="deleteReport('${r.id_report}')">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
