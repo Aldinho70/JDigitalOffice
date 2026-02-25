@@ -298,7 +298,7 @@ export const viewReport = async (id_report) => {
     console.log(r);
 
     const col_class =
-      r.assigned_to_technician == null || r.assigned_to_technician == 0
+      r.assigned_to_technician == null && r.id_payment == null
         ? "col-6"
         : "col-4";
 
@@ -508,7 +508,7 @@ export const viewReport = async (id_report) => {
                     </div>
 
                     ${
-                      r.assigned_to_technician == 1
+                      r.assigned_to_technician == 1 || r.is_billable == 1
                         ? `
                         <div class="col-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">

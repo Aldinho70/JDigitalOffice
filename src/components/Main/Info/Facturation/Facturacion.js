@@ -23,7 +23,7 @@ const getFacturas = async ( filter = null ) => {
                         *
                       FROM
                         vw_reports_tickets 
-     ${ (filter) ? `WHERE payment_status = '${filter}'` : '' }` }
+                    WHERE id_payment IS NOT NULL ${ (filter) ? `AND payment_status = '${filter}'` : '' }` }
         );
 
         if (response.status !== 'ok') {
@@ -31,8 +31,6 @@ const getFacturas = async ( filter = null ) => {
             return [];
         }
 
-        console.log(response.mensaje);
-        
         return response.mensaje;        
     } catch (error) {
         
@@ -163,7 +161,6 @@ const facturaCard = (f) => {
     const statusColor = statusMap[f.payment_status] || "secondary";
 
     // const id_report = await getIdReport(f.ticket_id);
-    if( f.payment_status != null )
     return `
         <div class="col-12 col-md-6 col-lg-4 col-xl-3">
             <div class="card h-100 shadow-sm border-start border-4 border-${statusColor}">
