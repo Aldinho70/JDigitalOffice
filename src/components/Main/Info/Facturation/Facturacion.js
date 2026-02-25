@@ -19,7 +19,11 @@ const getFacturas = async ( filter = null ) => {
         const response = await request(
             'http://ws4cjdg.com/JDigitalReports/src/api/routes/utils/getQuery.php',
             'POST',
-            { query: `SELECT cobros_clientes.*,	T.id_reporte FROM cobros_clientes INNER JOIN tickets_soporte AS T ON cobros_clientes.ticket_id = T.id_ticket ${ (filter) ? `WHERE status_pago = '${filter}'` : '' }` }
+            { query: `SELECT
+                        *
+                      FROM
+                        vw_reports_tickets 
+     ${ (filter) ? `WHERE payment_status = '${filter}'` : '' }` }
         );
 
         if (response.status !== 'ok') {
@@ -50,7 +54,8 @@ export const FacturasCards = () => {
                 </nav>
 
                 <!-- BUSCADOR -->
-                <div class="col-md-4 mx-auto">
+                <div class="col-md-4 d-flex align-items-center gap-1 mx-auto">
+                    <label for="cards-search" class="col-form-label mb-0">Buscar</label>
                     <input 
                         type="text"
                         id="facturas-search"
@@ -150,15 +155,15 @@ const initFacturasSearch = () => {
 const facturaCard = (f) => {
 
     const statusMap = {
-        pendiente: "warning",
-        pagado: "success",
-        vencido: "danger"
+        pending: "warning",
+        paid: "success",
+        overdue: "secondary"
     };
 
-    const statusColor = statusMap[f.status_pago] || "secondary";
+    const statusColor = statusMap[f.payment_status] || "secondary";
 
     // const id_report = await getIdReport(f.ticket_id);
-
+    if( f.payment_status != null )
     return `
         <div class="col-12 col-md-6 col-lg-4 col-xl-3">
             <div class="card h-100 shadow-sm border-start border-4 border-${statusColor}">
@@ -167,28 +172,27 @@ const facturaCard = (f) => {
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <strong>
                         <i class="bi bi-receipt me-1"></i>
-                        ${f.folio}
+                        ${f.invoice_folio}
                     </strong>
                     <span class="badge bg-${statusColor}">
-                        ${f.status_pago}
+                        ${f.payment_status}
                     </span>
                 </div>
 
                 <!-- BODY -->
                 <div class="card-body small">
-                    <div><strong>Cliente:</strong> ${f.cliente}</div>
-                    <div><strong>Concepto:</strong> ${f.concepto}</div>
-                    <div><strong>Tipo:</strong> ${f.tipo_cobro}</div>
+                    <div><strong>Cliente:</strong> ${f.client_name}</div>
+                    <div><strong>Concepto:</strong> ${f.concept_payment}</div>
 
                     <div class="fw-bold text-success fs-6 mt-1">
-                        $${Number(f.costo_cliente).toLocaleString("es-MX")}
+                        $${Number(f.amount).toLocaleString("es-MX")}
                     </div>
 
-                    ${f.comentarios_facturacion ? `
+                    ${f.comment_payment ? `
                         <hr class="my-2">
                         <div class="text-muted">
                             <i class="bi bi-chat-left-text me-1"></i>
-                            ${f.comentarios_facturacion}
+                            ${f.comment_payment}
                         </div>
                     ` : ``}
                 </div>
@@ -196,16 +200,15 @@ const facturaCard = (f) => {
                 <!-- FOOTER -->
                 <div class="card-footer small text-muted d-flex justify-content-between">
                     <div>
-                        <span>Expedición: ${f.fecha_expedicion}</span> <br>
-                        <span>Límite pago: ${f.fecha_limite_pago}</span>
-                        ${f.fecha_pago ? `
+                        <span>Expedición: ${f.created_at_payment}</span> <br>
+                        ${f.paid_at_payment ? `
                             <div class="text-success">
-                            Pagado: ${f.fecha_pago}
+                            Pagado: ${f.paid_at_payment}
                             </div>
                             ` : ``}
                     </div>    
                     <div>
-                        <button class="btn btn-sm btn-warning" type="button" onClick="viewReport('${ f.id_reporte }')">
+                        <button class="btn btn-sm btn-warning" type="button" onClick="viewReport('${ f.id_report }')">
                             <i class="bi bi-eye"></i>
                             Ver detalles
                         </button>

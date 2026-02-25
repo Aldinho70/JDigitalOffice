@@ -67,7 +67,7 @@ export const listTecnicos = async () => {
     const response = await request(
         'http://ws4cjdg.com/JDigitalReports/src/api/routes/utils/getQuery.php',
         'POST',
-        { query: "SELECT * FROM tecnicos" }
+        { query: "SELECT * FROM technicians" }
     );
 
     if (response.status !== 'ok') {
@@ -77,9 +77,9 @@ export const listTecnicos = async () => {
 
     const columns = [
         { title: "ID", data: "id" },
-        { title: "Nombre", data: "nombre" },
-        { title: "Ciudad", data: "ciudad" },
-        { title: "Celular", data: "numero_telefono" },
+        { title: "Nombre", data: "name" },
+        { title: "Ciudad", data: "city" },
+        { title: "Celular", data: "phone" },
         {
             title: "Acciones",
             data: null,
@@ -187,9 +187,9 @@ $(document).on("click", ".btn-editar", function () {
 
     $("#tecnicoModalTitle").text("Editar técnico");
     $("#tecnico_id").val(tecnicoSelected.id);
-    $("#tecnico_nombre").val(tecnicoSelected.nombre);
-    $("#tecnico_ciudad").val(tecnicoSelected.ciudad);
-    $("#tecnico_telefono").val(tecnicoSelected.numero_telefono);
+    $("#tecnico_nombre").val(tecnicoSelected.name);
+    $("#tecnico_ciudad").val(tecnicoSelected.city);
+    $("#tecnico_telefono").val(tecnicoSelected.phone);
 
     new bootstrap.Modal("#TecnicoFormModal").show();
 });
@@ -209,16 +209,16 @@ $(document).on("click", "#btnSaveTecnico", async () => {
 
     const payload = {
         id: $("#tecnico_id").val(),
-        nombre: $("#tecnico_nombre").val(),
-        ciudad: $("#tecnico_ciudad").val(),
-        numero_telefono: $("#tecnico_telefono").val()
+        name: $("#tecnico_nombre").val(),
+        city: $("#tecnico_ciudad").val(),
+        phone: $("#tecnico_telefono").val()
     };
 
     try {
 
         const url = tecnicoMode === 'add'
-            ? 'http://ws4cjdg.com/JDigitalReports/src/api/routes/config/technical/addTechnical.php'
-            : 'http://ws4cjdg.com/JDigitalReports/src/api/routes/config/technical/editTechnical.php';
+            ? 'http://ws4cjdg.com/JDigitalReportsV2/src/api/routes/config/technical/addTechnical.php'
+            : 'http://ws4cjdg.com/JDigitalReportsV2/src/api/routes/config/technical/editTechnical.php';
 
         const response = await request(url, 'POST', payload);
 
@@ -266,7 +266,7 @@ $(document).on("click", ".btn-borrar", async function () {
     const data = row.data();
 
     const response = await request(
-        'http://ws4cjdg.com/JDigitalReports/src/api/routes/config/technical/deleteTechnical.php',
+        'http://ws4cjdg.com/JDigitalReportsV2/src/api/routes/config/technical/deleteTechnical.php',
         'POST',
         { id: data.id }
     );

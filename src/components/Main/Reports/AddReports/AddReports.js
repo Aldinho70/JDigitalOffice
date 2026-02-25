@@ -1,5 +1,6 @@
-import { changeView } from "../../Menu/MenuLeft/MenuLeft.js"
 import Env from "../../../../config/env.js";
+import { request } from "../../../../Utils/request.js";
+import { changeView } from "../../Menu/MenuLeft/MenuLeft.js"
 
 export const AddReports = () => {
     return `
@@ -8,7 +9,8 @@ export const AddReports = () => {
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="form-label">Gestor</label>
-                    <input type="text" class="form-control" name="monitorista" required>
+                    <!-- <input type="text" class="form-control" name="monitorista" required> -->
+                    <select class="form-select form-control" name="monitorista" id="select-monitor" required ></select>
                 </div>
 
                 <div class="col-md-6">
@@ -48,6 +50,99 @@ export const AddReports = () => {
 
         </form>
     `
+}
+
+$(document).on("submit", "#form-reporte", async function (e) {
+    e.preventDefault();
+
+    const btn = $(this).find("button[type='submit']");
+    const msgBox = $("#msg-response");
+
+    // spinner en el botón
+    btn.prop("disabled", true).html(`
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        Guardando...
+    `);
+
+    const data = {
+        monitor_id: $("#select-monitor").val() ?? '000000',
+        client_name: $("input[name='cliente']").val(),
+        Idunidad: $("#select-unidad").val() ?? '000000',
+        unit_name: $("input[name='nombreUnidad']").val(),
+        report_type: $("#select-type-failure").val(),
+        comment: $("textarea[name='comentario']").val()
+    };
+
+    console.log( data );
+    
+    try {
+        let BASE_URL = 'http://ws4cjdg.com/JDigitalReportsV2/';
+
+        // if( Env.DEV ){
+        //     BASE_URL = `http://localhost:8080/repos/JornadaDigital/JornadaDigital.ReportesDeUnidades.com/`
+        // }
+
+        // console.log(BASE_URL);
+        
+        const res = await axios.post(
+            `${BASE_URL}src/api/routes/reports/addReport.php`,
+            data
+        );
+
+        console.log(res);
+         
+        msgBox.html(`
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Éxito:</strong> El reporte fue guardado correctamente.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `);
+
+        // limpiar formulario
+        $("#form-reporte")[0].reset();
+
+        setTimeout(() => {
+            changeView("2"); 
+        }, 1500);
+
+    } catch (err) {
+        msgBox.html(`
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Error:</strong> No se pudo guardar el reporte. Intente de nuevo.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `);
+        console.error(err);
+    }
+
+    // restaurar botón
+    btn.prop("disabled", false).html("Guardar");
+});
+
+export const loadMonitoring = async () => {
+    try {
+        const response = await request( 'http://ws4cjdg.com/JDigitalReports/src/api/routes/utils/getQuery.php', 'POST', { query: "SELECT * FROM monitors" } );
+
+        if( response.status == 'ok' ){
+
+            const $select = $("#select-monitor");
+            $select.empty()
+            $select.append('<option value="" disabled >Seleccione a un gestor ...</option>');
+
+            response.mensaje.forEach( m => {
+                if( m.is_active ){
+                    $select.append(`
+                        <option value="${m.id}" >
+                            ${m.full_name}
+                        </option>
+                    `);
+                }
+            } )
+        }
+        
+    } catch (error) {
+        alert( error );
+    }
 }
 
 export const loadUnitsSelect2 = () => {
@@ -142,7 +237,6 @@ export const loadTypeFailureSelect2 = () => {
         });
 };
 
-
 export const formatoUnidad = ( unidad ) => {
     if (!unidad.id) return unidad.text;
     const icon = $(unidad.element).data("icon") || "./src/assets/logojs.png";
@@ -156,58 +250,3 @@ export const formatoUnidad = ( unidad ) => {
     `;
     return $(html);
 }
-
-$(document).on("submit", "#form-reporte", async function (e) {
-    e.preventDefault();
-
-    const btn = $(this).find("button[type='submit']");
-    const msgBox = $("#msg-response");
-
-    // spinner en el botón
-    btn.prop("disabled", true).html(`
-        <span class="spinner-border spinner-border-sm me-2"></span>
-        Guardando...
-    `);
-
-    const data = {
-        monitorista: $("input[name='monitorista']").val(),
-        cliente: $("input[name='cliente']").val(),
-        Idunidad: $("#select-unidad").val() ?? '000000',
-        nombreUnidad: $("input[name='nombreUnidad']").val(),
-        tipoReporte: $("#select-type-failure").val(),
-        comentario: $("textarea[name='comentario']").val()
-    };
-
-    try {
-        const res = await axios.post(
-            "http://ws4cjdg.com/JDigitalReports/src/api/routes/reports/addReport.php",
-            data
-        );
-
-        msgBox.html(`
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <strong>Éxito:</strong> El reporte fue guardado correctamente.
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        `);
-
-        // limpiar formulario
-        $("#form-reporte")[0].reset();
-
-        setTimeout(() => {
-            changeView("2"); 
-        }, 1500);
-
-    } catch (err) {
-        msgBox.html(`
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Error:</strong> No se pudo guardar el reporte. Intente de nuevo.
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        `);
-        console.error(err);
-    }
-
-    // restaurar botón
-    btn.prop("disabled", false).html("Guardar");
-});

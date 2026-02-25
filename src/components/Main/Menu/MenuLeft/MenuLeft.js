@@ -5,7 +5,7 @@ import { Reports, loadReportsTable } from "../../Reports/Reports.js";
 import { Dashboard, initDashboard } from "../../Dashboard/Dashboard.js";
 import { ReportsCards, loadReportsCards } from "../../Reports/ReportCards/ReportCard.js";
 import { FacturasCards, loadFacturasCards } from "../../Info/Facturation/Facturacion.js";
-import { AddReports, loadUnitsSelect2, loadTypeFailureSelect2 } from "../../Reports/AddReports/AddReports.js";
+import { AddReports, loadUnitsSelect2, loadTypeFailureSelect2, loadMonitoring } from "../../Reports/AddReports/AddReports.js";
 
 export const MenuLeft = () => {
   return `
@@ -65,8 +65,9 @@ export const changeView = (id) => {
 
     case "4":
       root.innerHTML = AddReports();
-      loadUnitsSelect2();
+      loadMonitoring();
       loadTypeFailureSelect2();
+      // loadUnitsSelect2();
       break;
 
     case "5":

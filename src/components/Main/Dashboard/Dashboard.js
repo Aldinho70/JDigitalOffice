@@ -24,7 +24,7 @@ export const Dashboard = () => {
                     </div>
 
                     <div class="col-md-3">
-                        <div class="kpi-card kpi-success" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewReports('atendidas')">
+                        <div class="kpi-card kpi-success" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewReports('completed')">
                             <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
                             <div>
                                 <h3 id="root-kpi-reports-attend">0</h3>
@@ -34,7 +34,7 @@ export const Dashboard = () => {
                     </div>
 
                     <div class="col-md-3">
-                        <div class="kpi-card kpi-danger" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewReports('noAtendidas')">
+                        <div class="kpi-card kpi-danger" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewReports('pending')">
                             <div class="kpi-icon"><i class="bi bi-x-circle"></i></div>
                             <div>
                                 <h3 id="root-kpi-reports-not-attend">0</h3>
@@ -63,28 +63,28 @@ export const Dashboard = () => {
 
                 <div class="row g-3">
                     <div class="col-md-2">
-                        <div class="kpi-card kpi-neutral" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewFacturation('pendiente')" >
+                        <div class="kpi-card kpi-neutral" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewFacturation('pending')" >
                             <h4 id="root-kpi-pendiente_pago">0</h4>
                             <span>Pendiente pago</span>
                         </div>
                     </div>
 
                     <div class="col-md-2 kpi-popover" onClick="viewKpisFacturation('pagado')">
-                        <div class="kpi-card kpi-success-soft" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewFacturation('pagado')">
+                        <div class="kpi-card kpi-success-soft" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewFacturation('paid')">
                             <h4 id="root-kpi-pagado">0</h4>
                             <span>Pagado</span>
                         </div>
                     </div>
 
                     <div class="col-md-2">
-                        <div class="kpi-card kpi-primary-soft" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewReports('facturados')">
+                        <div class="kpi-card kpi-primary-soft" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewReports('isBillable')">
                             <h4 id="root-kpi-facturados">0</h4>
                             <span>Facturados</span>
                         </div>
                     </div>
 
                     <div class="col-md-2">
-                        <div class="kpi-card kpi-danger-soft" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewReports('nofacturados')" >
+                        <div class="kpi-card kpi-danger-soft" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="viewReports('noBillable')" >
                             <h4 id="root-kpi-sin_factura">0</h4>
                             <span>Sin factura</span>
                         </div>
@@ -175,21 +175,28 @@ export const Dashboard = () => {
 }
 
 export const initDashboard = async () => {
-    let res = await getKpisTickets()
-    const kpisTickets = res[0];
-    
-    $("#root-kpi-all-reports").html(kpisTickets.total_tickets)
-    $("#root-kpi-porcent").html(kpisTickets.porcentaje_cumplimiento + '%')
-    $("#root-kpi-reports-attend").html(kpisTickets.tickets_resueltos)
-    $("#root-kpi-reports-not-attend").html(kpisTickets.tickets_no_resueltos)
 
-    res = await getKpisFacturacion();
-    $("#root-kpi-pagado").html( res.pagado )
-    $("#root-kpi-pendiente_pago").html( res.pendiente )
-    
-    res = await getKpisFacturacion2();
-    $("#root-kpi-facturados").html( res.facturados )
-    $("#root-kpi-sin_factura").html( res.sin_factura )
+    /**
+     * Repors and Tickets
+     */
+        let res = await getKpisTickets()
+        const kpisTickets = res[0];
+        
+        $("#root-kpi-all-reports").html(kpisTickets.total_tickets)
+        $("#root-kpi-porcent").html(kpisTickets.porcentaje_cumplimiento + '%')
+        $("#root-kpi-reports-attend").html(kpisTickets.tickets_resueltos)
+        $("#root-kpi-reports-not-attend").html(kpisTickets.tickets_no_resueltos)
+
+    /**
+     * Facturas
+     */
+        res = await getKpisFacturacion();
+        $("#root-kpi-pagado").html( res.paid )
+        $("#root-kpi-pendiente_pago").html( res.pending )
+        
+        res = await getKpisFacturacion2();
+        $("#root-kpi-facturados").html( res.facturados )
+        $("#root-kpi-sin_factura").html( res.sin_factura )
     
 
     res = await getContField('cliente');
@@ -231,17 +238,18 @@ const getKpisFacturacion = async () => {
             'http://ws4cjdg.com/JDigitalReports/src/api/routes/utils/getQuery.php',
             'POST',
             {
-                query: `
-                SELECT status_pago, COUNT(*) AS repeticiones
-                FROM cobros_clientes
-                GROUP BY status_pago;
-                `
+                query: `SELECT 
+                            payment_status, count(*) AS repeticiones 
+                        FROM 
+                            client_charges
+                        GROUP BY 
+                            payment_status;`
             }
         );
 
         if (response.status === 'ok') {
-            response.mensaje.forEach(el => {
-                kpis[el.status_pago] = el.repeticiones;
+            response.mensaje.forEach(f => {
+                kpis[f.payment_status] = f.repeticiones;
             });
         }
 
@@ -260,11 +268,15 @@ const getKpisFacturacion2 = async () => {
             'POST',
             {
                 query: `
-                SELECT
-                    COUNT(id_asignacion) AS facturados,
-                    SUM(CASE WHEN id_asignacion IS NULL THEN 1 ELSE 0 END) AS sin_factura
-                FROM view_tickets_reports;
-                `
+                SELECT 
+                    COUNT(is_billable) AS facturados, 
+                    SUM(
+                        CASE
+                            WHEN is_billable IS NULL THEN 1
+                            ELSE 0
+                        END
+                    ) AS sin_factura
+                FROM vw_reports_tickets;`
             }
         );
 
