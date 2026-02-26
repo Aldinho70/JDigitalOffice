@@ -3,9 +3,10 @@ import { Technicals } from "../../Info/Technicals/Technicals.js";
 import { viewFacturation } from "../../Info/Facturation/Facturation.js";
 
 /* =========================
-   CONFIG PAGINACIÓN
+   CONFIG PAGINACION
 ========================= */
-const CARDS_PER_PAGE = 8;
+const CARDS_PER_PAGE = 12;
+const MAX_VISIBLE_PAGES = 7;
 let allReports = [];
 let filteredReports = [];
 let currentPage = 1;
@@ -15,49 +16,91 @@ let currentPage = 1;
 ========================= */
 export const ReportsCards = () => {
     return `
-        <div class="container-fluid ">
+        <div class="container-fluid px-2 px-md-3" style="max-height: 90vh; overflow: auto;" >
 
-            <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="row g-2 g-md-3 align-items-center mb-2">
 
                 <!-- PAGINADOR -->
-                <div class="d-flex align-items-center gap-2">
-                    <span class="fw-semibold text-muted small">Páginas</span>
+                <div class="col-12 col-md-auto">
+                    <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                        <span class="fw-semibold text-muted small text-nowrap">Paginas</span>
 
-                    <nav>
-                        <ul class="pagination pagination-sm mb-0" id="cards-pagination"></ul>
-                    </nav>
+                        <nav class="flex-grow-1" style="min-width: 0;">
+                            <div class="overflow-auto" style="max-width: 100%;">
+                                <ul class="pagination pagination-sm mb-0 flex-nowrap" id="cards-pagination"></ul>
+                            </div>
+                        </nav>
+                    </div>
                 </div>
 
-                <!-- BUSCADOR CENTRADO -->
-                <div class="col-md-4 d-flex align-items-center gap-1 mx-auto">
-                    <label for="cards-search" class="col-form-label mb-0">Buscar</label>
-                    <input 
-                        type="text"
-                        id="cards-search"
-                        class="form-control form-control-sm"
-                        placeholder="Reporte, unidad, cliente..."
-                    >
+                <!-- BUSCADOR -->
+                <div class="col-12 col-md-5 col-lg-4">
+                    <div class="d-flex align-items-center gap-1">
+                        <label for="cards-search" class="col-form-label mb-0 text-nowrap">Buscar</label>
+                        <input 
+                            type="text"
+                            id="cards-search"
+                            class="form-control form-control-sm"
+                            placeholder="Reporte, unidad, cliente..."
+                        >
+                    </div>
                 </div>
 
                 <!-- BOTONES -->
-                <div class="d-flex gap-1 ms-auto">
+                <div class="col-12 col-md">
+                    <div class="d-flex gap-1 justify-content-start justify-content-md-end flex-wrap">
 
-                    <!--<button class="btn btn-sm btn-warning" onClick="Technicals('root_tecnico')">
-                        Tecnicos
-                    </button>-->
+                        <!--<button class="btn btn-sm btn-warning" onClick="Technicals('root_tecnico')">
+                            Tecnicos
+                        </button>-->
 
-                    <button class="btn btn-sm btn-success" onClick="changeView('4')">
-                        Nuevo reporte
-                    </button>
+                        <button class="btn btn-sm btn-success" onClick="changeView('4')">
+                            Nuevo reporte
+                        </button>
 
-                    <button class="btn btn-sm btn-warning" onClick="changeView('2')">
-                        Cambiar vista
-                    </button>
-                    
+                        <button class="btn btn-sm btn-warning" onClick="changeView('2')">
+                            Cambiar vista
+                        </button>
+                        
+                    </div>
                 </div>
 
             </div>
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab-reports_card" role="tablist">
+                    
+                    <button class="nav-link active text-danger" id="nav-pending-tab"
+                    data-bs-toggle="tab" data-bs-target="#nav-pending"
+                    type="button" role="tab">
+                    <i class="bi bi-clock"></i> Todos
+                    </button>
 
+                    <button class="nav-link text-warning" id="nav-pending-tab"
+                    data-bs-toggle="tab" data-bs-target="#nav-pending"
+                    type="button" role="tab">
+                    <i class="bi bi-clock"></i> Pendientes
+                    </button>
+
+                    <button class="nav-link text-success" id="nav-Completed-tab"
+                    data-bs-toggle="tab" data-bs-target="#nav-Completed"
+                    type="button" role="tab">
+                    <i class="bi bi-check-circle"></i> Terminados
+                    </button>
+
+                    <button class="nav-link text-primary" id="nav-billable-tab"
+                    data-bs-toggle="tab" data-bs-target="#nav-billable"
+                    type="button" role="tab">
+                    <i class="bi bi-receipt"></i> Facturados
+                    </button>
+
+                    <button class="nav-link text-dark" id="nav-technicians-tab"
+                    data-bs-toggle="tab" data-bs-target="#nav-technicians"
+                    type="button" role="tab">
+                    <i class="bi bi-people"></i> Técnicos
+                    </button>
+
+                </div>
+            </nav>  
             <div class="row g-3" id="reports-cards-container"></div>
 
         </div>
@@ -86,40 +129,100 @@ export const loadReportsCards = async () => {
 };
 
 /* =========================
-   RENDER CARDS + PAGINACIÓN
+   RENDER CARDS + PAGINACION
 ========================= */
 const renderCards = () => {
     const container = document.getElementById("reports-cards-container");
+    const totalPages = Math.max(1, Math.ceil(filteredReports.length / CARDS_PER_PAGE));
+
+    if (currentPage > totalPages) {
+        currentPage = totalPages;
+    }
 
     const start = (currentPage - 1) * CARDS_PER_PAGE;
     const end = start + CARDS_PER_PAGE;
-
     const pageData = filteredReports.slice(start, end);
 
     container.innerHTML = pageData.map(r => createReportCard(r)).join("");
 
-    renderPagination();
+    renderPagination(totalPages);
 };
 
-const renderPagination = () => {
+const buildPagesToShow = (totalPages, activePage) => {
+    if (totalPages <= MAX_VISIBLE_PAGES) {
+        return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    const pages = [1];
+    const innerSlots = MAX_VISIBLE_PAGES - 2;
+    let start = Math.max(2, activePage - Math.floor(innerSlots / 2));
+    let end = start + innerSlots - 1;
+
+    if (end >= totalPages) {
+        end = totalPages - 1;
+        start = end - innerSlots + 1;
+    }
+
+    if (start > 2) pages.push("...");
+
+    for (let i = start; i <= end; i++) pages.push(i);
+
+    if (end < totalPages - 1) pages.push("...");
+
+    pages.push(totalPages);
+    return pages;
+};
+
+const renderPagination = (totalPages) => {
     const pagination = document.getElementById("cards-pagination");
-    const totalPages = Math.ceil(filteredReports.length / CARDS_PER_PAGE);
 
     pagination.innerHTML = "";
 
     if (totalPages <= 1) return;
 
-    for (let i = 1; i <= totalPages; i++) {
-        pagination.innerHTML += `
-            <li class="page-item ${i === currentPage ? "active" : ""}">
-                <a class="page-link" href="#" data-page="${i}">${i}</a>
+    const pagesToShow = buildPagesToShow(totalPages, currentPage);
+    const prevDisabled = currentPage === 1 ? "disabled" : "";
+    const nextDisabled = currentPage === totalPages ? "disabled" : "";
+
+    let html = `
+        <li class="page-item ${prevDisabled}">
+            <a class="page-link" href="#" data-page="${currentPage - 1}" aria-label="Anterior">&laquo;</a>
+        </li>
+    `;
+
+    html += pagesToShow.map(p => {
+        if (p === "...") {
+            return `
+                <li class="page-item disabled" aria-disabled="true">
+                    <span class="page-link">...</span>
+                </li>
+            `;
+        }
+
+        return `
+            <li class="page-item ${p === currentPage ? "active" : ""}">
+                <a class="page-link" href="#" data-page="${p}">${p}</a>
             </li>
         `;
-    }
+    }).join("");
+
+    html += `
+        <li class="page-item ${nextDisabled}">
+            <a class="page-link" href="#" data-page="${currentPage + 1}" aria-label="Siguiente">&raquo;</a>
+        </li>
+    `;
+
+    pagination.innerHTML = html;
 
     $("#cards-pagination .page-link").off().on("click", function (e) {
         e.preventDefault();
-        currentPage = Number($(this).data("page"));
+
+        const page = Number($(this).data("page"));
+        if (!Number.isInteger(page) || page < 1 || page > totalPages || page === currentPage) {
+            return;
+        }
+
+        currentPage = page;
         renderCards();
     });
 };
@@ -133,12 +236,13 @@ const initCardsSearch = () => {
 
         filteredReports = allReports.filter(r => {
             const searchData = `
-                ${r.id}
-                ${r.nombreUnidad}
-                ${r.Idunidad}
-                ${r.cliente}
-                ${r.tipoReporte}
-                ${r.estado}
+                ${r.id_report}
+                ${r.id_ticket}
+                ${r.unit_name}
+                ${r.client_name}
+                ${r.monitor_name}
+                ${r.report_type}
+                ${r.status_ticket}
             `.toLowerCase();
 
             return searchData.includes(value);
@@ -153,8 +257,6 @@ const initCardsSearch = () => {
    CARD INDIVIDUAL
 ========================= */
 const createReportCard = (r) => {
-    console.log(r);
-    
     const statusMap = {
         pending: "danger",
         completed: "success",
@@ -215,7 +317,7 @@ const createReportCard = (r) => {
                     ${(r.technician_name != null ) 
                         ? ` <div>
                                 <i class="bi bi-wrench-adjustable me-1"></i>
-                                <strong>Técnico:</strong> ${r.technician_name}
+                                <strong>Tecnico:</strong> ${r.technician_name}
                             </div>` 
                         : ``}
                     </div>
