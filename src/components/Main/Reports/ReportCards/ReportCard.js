@@ -1,5 +1,4 @@
 import { changeView } from "../../Menu/MenuLeft/MenuLeft.js";
-import { Technicals } from "../../Info/Technicals/Technicals.js";
 import { viewFacturation } from "../../Info/Facturation/Facturation.js";
 
 /* =========================

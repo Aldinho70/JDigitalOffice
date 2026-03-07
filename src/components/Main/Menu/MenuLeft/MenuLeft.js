@@ -1,10 +1,10 @@
 import { Config } from "../../Config/Config.js";
 import { Calendar } from "../../Calendar/Calendar.js";
-import { Technicals } from "../../Info/Technicals/Technicals.js";
 import { Reports, loadReportsTable } from "../../Reports/Reports.js";
 import { Dashboard, initDashboard } from "../../Dashboard/Dashboard.js";
 import { ReportsCards, loadReportsCards } from "../../Reports/ReportCards/ReportCard.js";
 import { FacturasCards, loadFacturasCards } from "../../Info/Facturation/Facturacion.js";
+import { TechnicianCards, loadTechnicianCards } from "../../Info/Technicals/Technicals.js";
 import { AddReports, loadUnitsSelect2, loadTypeFailureSelect2, loadMonitoring } from "../../Reports/AddReports/AddReports.js";
 
 export const MenuLeft = () => {
@@ -87,7 +87,8 @@ export const changeView = (id) => {
       break;
 
     case "8":
-      root.innerHTML = Technicals();
+      root.innerHTML = TechnicianCards();
+      loadTechnicianCards();
       break;
 
     default:

@@ -4,6 +4,7 @@ import { ReportsCards, loadReportsCards } from "../Reports/ReportCards/ReportCar
 import { Dashboard, initDashboard } from "../Dashboard/Dashboard.js"
 import { viewReport } from "../Reports/Reports.js"
 import { FacturasCards, loadFacturasCards } from "../Info/Facturation/Facturacion.js"
+import { TechnicianCards, loadTechnicianCards } from "../Info/Technicals/Technicals.js"
 
 export const Menu = () => {
     return `
@@ -16,8 +17,8 @@ export const Menu = () => {
 
                 <!-- CONTENIDO -->
                 <div class="col-11" id="RightContent">
-                    ${Dashboard()}
-                    ${initDashboard()}
+                    ${ TechnicianCards() }
+                    ${ loadTechnicianCards() }
                 </div>
             </div>
         </div>
