@@ -28,7 +28,10 @@ export const MenuLeft = () => {
       </button>
 
       <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('8')" data-title="Pago de tecnicos">
-        <span class="material-symbols-outlined">engineering</span>
+        <div class="d-flex aling-align-items-baseline justify-content-center p-1" style=" max-width: 25px; height: 35px;">
+          <span class="">$</span>
+          <span class="material-symbols-outlined">engineering</span>
+        </div>
       </button>
 
       <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('6')" data-title="Calendario">

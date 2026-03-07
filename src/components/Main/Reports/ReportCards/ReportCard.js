@@ -66,41 +66,49 @@ export const ReportsCards = () => {
                 </div>
 
             </div>
-            <nav>
-                <div class="nav nav-tabs" id="nav-tab-reports_card" role="tablist">
-                    
-                    <button class="nav-link active text-danger" id="nav-pending-tab"
-                    data-bs-toggle="tab" data-bs-target="#nav-pending"
-                    type="button" role="tab">
-                    <i class="bi bi-clock"></i> Todos
+            
+            <nav id="nav-filter-cards" class="mb-3">
+
+                <div class="nav nav-pills gap-2 flex-wrap" id="nav-tab-reports_card" role="tablist">
+
+                    <button class="nav-link active bg-danger text-white"
+                        data-bs-toggle="tab"
+                        type="button"
+                        onClick="loadReportsCards('allReports')">
+                        <i class="bi bi-clock"></i> Todos los reportes
                     </button>
 
-                    <button class="nav-link text-warning" id="nav-pending-tab"
-                    data-bs-toggle="tab" data-bs-target="#nav-pending"
-                    type="button" role="tab">
-                    <i class="bi bi-clock"></i> Pendientes
+                    <button class="nav-link bg-warning text-dark"
+                        data-bs-toggle="tab"
+                        type="button"
+                        onClick="loadReportsCards('pending')">
+                        <i class="bi bi-clock"></i> Pendientes
                     </button>
 
-                    <button class="nav-link text-success" id="nav-Completed-tab"
-                    data-bs-toggle="tab" data-bs-target="#nav-Completed"
-                    type="button" role="tab">
-                    <i class="bi bi-check-circle"></i> Terminados
+                    <button class="nav-link bg-success text-white"
+                        data-bs-toggle="tab"
+                        type="button"
+                        onClick="loadReportsCards('completed')">
+                        <i class="bi bi-check-circle"></i> Terminados
                     </button>
 
-                    <button class="nav-link text-primary" id="nav-billable-tab"
-                    data-bs-toggle="tab" data-bs-target="#nav-billable"
-                    type="button" role="tab">
-                    <i class="bi bi-receipt"></i> Facturados
+                    <button class="nav-link bg-primary text-white"
+                        data-bs-toggle="tab"
+                        type="button"
+                        onClick="loadReportsCards('isBillable')">
+                        <i class="bi bi-receipt"></i> Facturados
                     </button>
 
-                    <button class="nav-link text-dark" id="nav-technicians-tab"
-                    data-bs-toggle="tab" data-bs-target="#nav-technicians"
-                    type="button" role="tab">
-                    <i class="bi bi-people"></i> Técnicos
+                    <button class="nav-link bg-dark text-white"
+                        data-bs-toggle="tab"
+                        type="button">
+                        <i class="bi bi-people"></i> Técnicos
                     </button>
 
                 </div>
-            </nav>  
+
+            </nav>
+
             <div class="row g-3" id="reports-cards-container"></div>
 
         </div>
@@ -110,9 +118,10 @@ export const ReportsCards = () => {
 /* =========================
    CARGA DE CARDS
 ========================= */
-export const loadReportsCards = async () => {
+export const loadReportsCards = async ( filter ) => {
     try {
-        const url = `http://ws4cjdg.com/JDigitalReportsV2/src/api/routes/reports/viewReportsTickets.php`;
+        // const url = `http://ws4cjdg.com/JDigitalReportsV2/src/api/routes/reports/viewReportsTickets.php`;
+        const url = `http://ws4cjdg.com/JDigitalReportsV2/src/api/routes/reports/viewReportsTickets.php?filter=${filter}`;
         const resp = await fetch(url);
         const data = await resp.json();
 
@@ -127,7 +136,7 @@ export const loadReportsCards = async () => {
         console.error("Error cargando cards:", err);
     }
 };
-
+window.loadReportsCards = loadReportsCards;
 /* =========================
    RENDER CARDS + PAGINACION
 ========================= */
