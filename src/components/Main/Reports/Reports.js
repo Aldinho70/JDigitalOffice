@@ -264,7 +264,7 @@ export const viewReport = async (id_report) => {
                     <div class="modal-body bg-light-subtle">
 
                         <!-- Loader -->
-                        <div id="report-loader" class="d-flex flex-column align-items-center justify-content-center text-center py-5">
+                        <div id="report-loader" class="d-flex flex-column align-items-center justify-content-center text-center py-5 visually-hidden">
                             <div class="spinner-border text-warning"></div>
                             <p class="mt-3 mb-0 text-muted fw-semibold">Cargando detalle del reporte...</p>
                         </div>

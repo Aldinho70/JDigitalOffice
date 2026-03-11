@@ -2,6 +2,7 @@
    DEPENDENCIAS
 ========================= */
 import { request } from "../../../../Utils/request.js";
+import { UI } from "../../../sharedComponents/sharedComponents.js";
 
 /* =========================
    CONFIG PAGINACIÓN
@@ -22,8 +23,6 @@ const getTechnician = async ( filter = null ) => {
             { }
         );
 
-        console.log(response);
-        
         if (response.status !== 'ok') {
             alert('Error al obtener el historial de tecnicos');
             return [];
@@ -59,6 +58,9 @@ export const TechnicianCards = () => {
                         placeholder="Buscar folio, cliente, concepto..."
                     >
                 </div>
+
+                <button class="btn btn-sm btn-primary" onClick="openAddTecnico()">Agregar tecnico nuevo</button>
+                <button class="btn btn-sm btn-secondary" onClick="listTecnicos()">Ver lista de tecnicos</button>
 
             </div>
 
@@ -132,12 +134,10 @@ const initTechnicianSearch = () => {
 
         const value = $(this).val().toLowerCase();
 
-        filteredTechnician = allTechnician.filter(f => `
-            ${f.folio}
-            ${f.cliente}
-            ${f.concepto}
-            ${f.tipo_cobro}
-            ${f.status_pago}
+        filteredTechnician = allTechnician.filter(t => `
+            ${t.technician_name}
+            ${t.technician_phone}
+            ${t.technician_city}
         `.toLowerCase().includes(value));
 
         currentPage = 1;
@@ -151,15 +151,8 @@ const initTechnicianSearch = () => {
 const TechnicianCard = (f) => {
     console.log(f);
     
-    // const statusMap = {
-    //     pending: "warning",
-    //     paid: "success",
-    //     overdue: "secondary"
-    // };
-
     const statusColor = "secondary";
 
-    // const id_report = await getIdReport(f.ticket_id);
     return `
         <div class="col-12 col-md-6 col-lg-4 col-xl-3">
             <div class="card h-100 shadow-sm border-start border-4 border-${statusColor}">
@@ -167,7 +160,7 @@ const TechnicianCard = (f) => {
                 <!-- HEADER -->
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <strong>
-                        <i class="bi bi-receipt me-1"></i>
+                        <i class="bi bi-person-gear me-1"></i>
                         ${f.technician_name}
                     </strong>
                     <!--<span class="badge bg-${statusColor}">
@@ -177,10 +170,22 @@ const TechnicianCard = (f) => {
 
                 <!-- BODY -->
                 <div class="card-body small">
-                    <div><strong>Telefono:</strong> ${f.technician_phone}</div>
-                    <div><strong>Ciudad:</strong> ${f.technician_city}</div>
-                    <div><strong>Trabajos asignados:</strong> ${f.count_assignation}</div>
-
+                    <div class="row">
+                        <div class="col-lg-6" >
+                            <div><strong>Telefono:</strong> ${f.technician_phone}</div>
+                            <div><strong>Ciudad:</strong> ${f.technician_city}</div>
+                            <div><strong>Total trabajos:</strong> ${f.count_assignation}</div>
+                        </div>
+                        <div class="col-lg-6" >
+                            <div class="kpi-card shadow-lg" >
+                                <!--<div class="kpi-icon"><i class="bi bi-check-circle"></i></div>-->
+                                <div>
+                                    <h3 id="root-kpi-reports-attend">$${Math.ceil(f.service_cost/10)*10}</h3>
+                                    <span>Costo promedio</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!--<div class="fw-bold text-success fs-6 mt-1">
                         $${Number(f.amount).toLocaleString("es-MX")}
                     </div>-->
@@ -205,7 +210,7 @@ const TechnicianCard = (f) => {
                             ` : ``}
                     </div> -->
                     <div>
-                        <button class="btn btn-sm btn-warning" type="button" >
+                        <button class="btn btn-sm btn-warning" type="button" onClick="getWorksTechnician('${f.technician_id}')">
                             <i class="bi bi-eye"></i>
                             Ver mas detalles
                         </button>
@@ -217,11 +222,49 @@ const TechnicianCard = (f) => {
 };
 
 
-const getIdReport = async ( id_ticket ) => {
+const getWorksTechnician = async ( technician_id ) => {
+    try {
+        const response = await request(
+            'http://ws4cjdg.com/JDigitalReports/src/api/routes/utils/getQuery.php',
+            'POST',
+            { query: `SELECT * FROM vw_reports_technicians WHERE technician_id = ${technician_id}` }
+        );
     
-    const report = await request('http://ws4cjdg.com/JDigitalReports/src/api/routes/utils/getQuery.php', 'post', { "query": `SELECT id_reporte FROM tickets_soporte WHERE id_ticket = ${id_ticket}`})
-    if( report.status == 'ok' ){
-        return report.mensaje[0].id_reporte;
+        const columns = [
+        { title: "Reporte id", data: "report_id" },
+        { title: "Unidad", data: "unit_name" },
+        { title: "Cliente", data: "client_name" },
+        { title: "Costo servicio", data: "service_cost" },
+        { title: "Comentario tecnico", data: "comment" },
+        { title: "Estatus", data: "status_technician"},
+        {
+            title: "Acciones",
+            data: null,
+            orderable: false,
+            searchable: false,
+            render: (_, __, row) =>`
+                <div class="d-flex gap-1 justify-content-center">
+                    <button class="btn btn-sm btn-warning btn-editar" onClick="viewReport('${row.report_id}')"> 
+                        <i class="bi bi-eye"></i>
+                        Ver reporte
+                    </button>
+                </div>
+            `
+        }
+        ];
+
+        if( response.status == 'ok' ){
+            const extendePropsModal = {
+                title: 'Trabajos asignados a tecnico'
+            }
+
+            UI.Modal( 'modal-works-technician', extendePropsModal)
+            UI.Table( "modal-body-modal-works-technician", response.mensaje, columns);
+        }
+        
+    } catch (error) {
+        alert( error )
     }
-    return 0;
+    
 }
+window.getWorksTechnician = getWorksTechnician;

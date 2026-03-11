@@ -45,13 +45,13 @@ class sharedComponents {
                         <div class="modal-body">
 
                             <!-- Loader -->
-                            <div id="report-loader" class="text-center">
+                            <div id="report-loader" class="text-center visually-hidden">
                                 <div class="spinner-border text-dark"></div>
                                 <p class="mt-2">Cargando...</p>
                             </div>
 
                             <!-- Contenido final del modal -->
-                            <div id="report-content-${id_tag}" class="visually-hidden"></div>
+                            <div id="modal-body-${id_tag}" class="visually-hidden">${data.body || ''}</div>
 
                         </div>
 
@@ -72,8 +72,8 @@ class sharedComponents {
         const modal = new bootstrap.Modal(document.getElementById(id_tag));
         modal.show();
 
-        // $("#report-content").html(html).removeClass("visually-hidden");
-        // $("#report-loader").addClass("visually-hidden");
+        $("#report-loader").addClass("visually-hidden");
+        $(`#modal-body-${id_tag}`).removeClass("visually-hidden");
 
     };
 

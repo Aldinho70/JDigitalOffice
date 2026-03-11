@@ -219,7 +219,12 @@ const facturaCard = (f) => {
 
 const getIdReport = async ( id_ticket ) => {
     
-    const report = await request('http://ws4cjdg.com/JDigitalReports/src/api/routes/utils/getQuery.php', 'post', { "query": `SELECT id_reporte FROM tickets_soporte WHERE id_ticket = ${id_ticket}`})
+    const report = await request(
+        'http://ws4cjdg.com/JDigitalReports/src/api/routes/utils/getQuery.php', 
+        'post', 
+        { "query": `SELECT id_reporte FROM tickets_soporte WHERE id_ticket = ${id_ticket}`}
+    )
+    
     if( report.status == 'ok' ){
         return report.mensaje[0].id_reporte;
     }
