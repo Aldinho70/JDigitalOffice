@@ -17,8 +17,8 @@ export const Menu = () => {
 
                 <!-- CONTENIDO -->
                 <div class="col-11" id="RightContent">
-                    ${ TechnicianCards() }
-                    ${ loadTechnicianCards() }
+                    ${ Dashboard()}
+                    ${ initDashboard() }
                 </div>
             </div>
         </div>

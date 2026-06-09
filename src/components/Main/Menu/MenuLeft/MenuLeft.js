@@ -8,37 +8,40 @@ import { TechnicianCards, loadTechnicianCards } from "../../Info/Technicals/Tech
 import { AddReports, loadUnitsSelect2, loadTypeFailureSelect2, loadMonitoring } from "../../Reports/AddReports/AddReports.js";
 
 export const MenuLeft = () => {
+  const role = sessionStorage.getItem('user');
+  const restricted = role === 'monitoreo' ? 'disabled' : '';
+  
   return `
     <div class="d-flex flex-column align-items-center gap-3 p-3 menu-left-buttons">
 
-      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('1')" data-title="Dashboard">
+      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('1')" ${restricted} data-title="Dashboard">
         <i class="bi bi-speedometer2 fs-4"></i>
       </button>
 
-      <!-- <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('2')" data-title="Unidades">
+      <!-- <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('2')" ${restricted} data-title="Unidades">
         <i class="bi bi-truck fs-4"></i>
       </button>-->
 
-      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('3')" data-title="Reportes">
+      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('3')" ${restricted} data-title="Reportes">
         <i class="bi bi-file-bar-graph fs-4"></i>
       </button>
 
-      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('7')" data-title="Facturas">
+      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('7')" ${restricted} data-title="Facturas">
         <i class="bi bi bi-cash-coin fs-4"></i>
       </button>
 
-      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('8')" data-title="Pago de tecnicos">
+      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('8')" ${restricted} data-title="Pago de tecnicos">
         <div class="d-flex aling-align-items-baseline justify-content-center p-1" style=" max-width: 25px; height: 35px;">
           <span class="">$</span>
           <span class="material-symbols-outlined">engineering</span>
         </div>
       </button>
 
-      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('6')" data-title="Calendario">
+      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('6')" ${restricted} data-title="Calendario">
         <i class="bi bi-calendar-date fs-4"></i>
       </button>
 
-      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('5')" data-title="Configuración">
+      <button class="btn btn-warning rounded-circle  menu-btn" onClick="changeView('5')" ${restricted} data-title="Configuración">
         <i class="bi bi-gear fs-4"></i>
       </button>
 

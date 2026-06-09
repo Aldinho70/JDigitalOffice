@@ -248,9 +248,9 @@ export const viewReport = async (id_report) => {
             <div class="modal-dialog modal-fullscreen modal-dialog-centered">
                 <div class="modal-content border-0">
 
-                    <div class="modal-header bg-warning-subtle border-bottom py-3">
+                    <div class="modal-header bg-dark border-bottom py-3">
                         <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 w-100">
-                            <h5 class="modal-title text-dark mb-0">
+                            <h5 class="modal-title text-light mb-0">
                                 <i class="bi bi-file-earmark-text me-2"></i> Detalles del Reporte
                             </h5>
                             <span class="badge rounded-pill text-bg-dark fw-semibold px-3 py-2">
@@ -295,7 +295,6 @@ export const viewReport = async (id_report) => {
     );
 
     const r = res.data.mensaje[0];
-    console.log(r);
 
     const col_class =
       r.assigned_to_technician == null && r.id_payment == null
@@ -305,203 +304,217 @@ export const viewReport = async (id_report) => {
     // HTML final del reporte
     const html = `
             <div class="container-fluid px-2 px-md-3">
-                <div class="row g-3">
+                <div class="row g-2">
 
-                    <!-- IZQUIERDA -->
+                    <!-- GENERAL -->
                     <div class="${col_class}">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-header bg-dark text-warning d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-card-heading"></i>
+                                    <span class="fw-semibold">Informacion general</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="small text-secondary fw-semibold">Fecha de registro</span>
+                                    <span class="badge rounded-pill text-bg-secondary">
+                                        <i class="bi bi-calendar-event me-1"></i> ${r.report_date.split(" ")[0]}
+                                    </span>
+                                </div>
+                            </div>
 
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="fw-semibold text-muted">Fecha de registro</span>
-                            <span class="badge rounded-pill bg-secondary">
-                                <i class="bi bi-calendar-event me-1"></i> ${r.report_date}
-                            </span>
+                            <div class="card-body bg-white">
+                                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                                    <span class="badge text-bg-warning text-dark px-3 py-2">
+                                        <i class="bi bi-exclamation-diamond me-1"></i> ${r.report_type}
+                                    </span>
+                                </div>
+
+                                <div class="p-3 rounded-3 border border-secondary-subtle bg-secondary-subtle mb-3">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="small text-secondary fw-semibold">Gestor</div>
+                                            <div class="fw-semibold text-dark">${r.monitor_name}</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="small text-secondary fw-semibold">Cliente</div>
+                                            <div class="fw-semibold text-dark">${r.client_name}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="p-3 rounded-3 border border-secondary-subtle bg-secondary-subtle mb-3">
+                                    <div class="small text-secondary fw-semibold mb-1">
+                                        <i class="bi bi-truck me-2"></i> Unidad
+                                    </div>
+                                    <div class="fw-semibold text-dark">${r.unit_name}</div>
+                                </div>
+
+                                <div class="p-3 rounded-3 border border-secondary-subtle bg-white">
+                                    <div class="small text-secondary fw-semibold mb-1">
+                                        <i class="bi bi-chat-left-text me-2"></i> Comentario del gestor
+                                    </div>
+                                    <div class="text-dark">
+                                        ${r.comment_report || "<span class='text-secondary'>Sin comentarios</span>"}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="p-3 border-0 rounded bg-white shadow-sm h-100">
-
-                            <h5 class="mb-3 text-dark fw-semibold">
-                                <i class="bi bi-card-heading me-2"></i> Informacion general de reporte
-                            </h5>
-
-                            <div class="row mb-2">
-                                <div class="col-md-6">
-                                    <strong>Gestor:</strong>
-                                    <div>${r.monitor_name}</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <strong>Cliente:</strong>
-                                    <div>${r.client_name}</div>
-                                </div>
-                            </div>
-
-                            <hr>
-
-                            <h6 class="mb-3 text-dark"><i class="bi bi-truck me-2"></i> Unidad</h6>
-
-                            <div class="row mb-2">
-                                <div class="col-md-12">
-                                    <strong>Nombre Unidad:</strong>
-                                    <div>${r.unit_name}</div>
-                                </div>
-                            </div>
-
-                            <hr>
-
-                            <h6 class="mb-3 text-dark"><i class="bi bi-exclamation-diamond me-2"></i> Tipo de Reporte</h6>
-                            <span class="badge rounded-pill bg-warning text-dark fs-6">${r.report_type}</span>
-
-                            <hr>
-
-                            <h6 class="mb-2 text-dark"><i class="bi bi-chat-left-text me-2"></i> Comentario del Gestor</h6>
-                            <div class="border rounded p-2 bg-white">
-                                ${r.comment_report || "<span class='text-muted'>Sin comentarios</span>"}
-                            </div>
-
-                        </div>
-
                     </div>
 
-                    <!-- DERECHA -->
+                    <!-- SOPORTE -->
                     <div class="${col_class}">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="fw-semibold text-muted">Ultima Actualizacion</span>
-                            <span class="badge rounded-pill bg-secondary">
-                                <i class="bi bi-calendar-event me-1"></i> ${r.ticket_date}
-                            </span>
-                        </div>
-                        <div class="border-0 rounded bg-white shadow-sm h-100 p-3">
-
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="text-dark mb-0 fw-semibold">
-                                    <i class="bi bi-pc-display me-2"></i> Seguimiento de Soporte Técnico.
-                                </h5>
-                                <button class="btn btn-sm btn-outline-warning" id="btnEditarSoporte">
-                                    <i class="bi bi-pencil-square me-1"></i> Editar
-                                </button>
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-header bg-dark text-warning d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-pc-display"></i>
+                                    <span class="fw-semibold">Soporte tecnico</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge rounded-pill text-bg-secondary">
+                                        <i class="bi bi-calendar-event me-1"></i> ${r.ticket_date?.split(" ")[0] || ''}
+                                    </span>
+                                    <button class="btn btn-sm btn-warning text-dark" id="btnEditarSoporte">
+                                        <i class="bi bi-pencil-square me-1"></i> Editar
+                                    </button>
+                                </div>
                             </div>
 
-                            <fieldset class="border border-secondary-subtle rounded p-3">
-                                <legend class="float-none w-auto fw-semibold px-2 text-warning-emphasis">Datos de soporte tecnico</legend>
-                                <div id="soporte-view">
+                            <div class="card-body bg-white">
+                                <fieldset class="border border-warning-subtle rounded-3 p-3 mb-3 bg-secondary-subtle">
+                                    <legend class="float-none w-auto fw-semibold text-warning-emphasis">Datos de soporte tecnico</legend>
+                                    <div id="soporte-view">
 
-                                    <div class="mb-4">
-                                        <strong class="text-dark"><i class="bi bi-chat-dots me-2"></i>Comentario principal</strong>
-                                        <div class="p-2 mt-1 border rounded bg-light">
-                                            ${r.comment_ticket || "<span class='text-muted'>Sin comentarios de soporte técnico</span>"}
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-4">
-                                        <div class="col-md-6">
-                                            <strong class="text-dark">
-                                                <i class="bi bi-gear me-2"></i>Tipo de acción
-                                            </strong>
-                                            <div class="p-2 mt-1 border rounded bg-light">
-                                                ${
-                                                {
-                                                    technician: "Escalado con tecnico",
-                                                    internal: "Solucion en oficina",
-                                                }[r.resolution_type_ticket] || "No data"
-                                                }
+                                        <div class="mb-3">
+                                            <div class="small text-secondary fw-semibold">
+                                                <i class="bi bi-chat-dots me-2"></i> Comentario principal
+                                            </div>
+                                            <div class="mt-2 p-3 rounded-3 border border-secondary-subtle bg-white">
+                                                ${r.comment_ticket || "<span class='text-secondary'>Sin comentarios de soporte tecnico</span>"}
                                             </div>
                                         </div>
 
-                                        <div class="col-md-6">
-                                            <strong class="text-dark"><i class="bi bi-flag me-2"></i>Estado de reporte</strong>
-                                            <div class="p-2 mt-1 border rounded bg-light">
-                                                ${
-                                                    {
-                                                        pending: 'Pendiente',
-                                                        completed: 'Completado',
-                                                        in_progress: 'En proceso'
-                                                    }
-                                                [r.status_ticket] || "Pendiente"
-                                                }
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-4">
-                                        <div class="col-md-6">
-                                            <strong class="text-dark">Escalado con tecnico</strong>
-                                            <div class="p-2 mt-1 border rounded bg-light">
-                                                ${
-                                                r.assigned_to_technician === null
-                                                    ? "Sin asignación de técnico"
-                                                    : ({
-                                                        0: "No",
-                                                        1: "Sí",
-                                                    }[r.assigned_to_technician] ??
-                                                    "")
-                                                }
-                                            </div>
-                                        </div>
-
-                                        ${
-                                        r.assigned_to_technician == null
-                                            ? `
-                                                <div class="col-md-6">
-                                                    <div class="p-2 mt-1 border rounded bg-light">
-                                                        <button class="btn btn-secondary" id="btn_asginar_tecnico" onClick="assigTech('${id_report}')">Asignar a tecnico</button>
+                                        <div class="row g-3 mb-3">
+                                            <div class="col-md-6">
+                                                <div class="p-3 rounded-3 border border-secondary-subtle bg-white h-100">
+                                                    <div class="small text-secondary fw-semibold mb-1">
+                                                        <i class="bi bi-gear me-2"></i> Tipo de accion
+                                                    </div>
+                                                    <div class="fw-semibold text-dark">
+                                                        ${
+                                                        {
+                                                            technician: "Escalado con tecnico",
+                                                            internal: "Solucion en oficina",
+                                                        }[r.resolution_type_ticket] || "No data"
+                                                        }
                                                     </div>
                                                 </div>
-                                            `
-                                            : ""
-                                        }
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="p-3 rounded-3 border border-secondary-subtle bg-white h-100">
+                                                    <div class="small text-secondary fw-semibold mb-1">
+                                                        <i class="bi bi-flag me-2"></i> Estado de reporte
+                                                    </div>
+                                                    <div class="fw-semibold text-dark">
+                                                        ${
+                                                            {
+                                                                pending: 'Pendiente',
+                                                                completed: 'Completado',
+                                                                in_progress: 'En proceso'
+                                                            }
+                                                        [r.status_ticket] || "Pendiente"
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="p-3 rounded-3 border border-secondary-subtle bg-white h-100">
+                                                    <div class="small text-secondary fw-semibold mb-1">Escalado con tecnico</div>
+                                                    <div class="fw-semibold text-dark">
+                                                        ${
+                                                        r.assigned_to_technician === null
+                                                            ? "Sin asignacion de tecnico"
+                                                            : ({
+                                                                0: "No",
+                                                                1: "Si",
+                                                            }[r.assigned_to_technician] ??
+                                                            "")
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            ${
+                                            r.assigned_to_technician == null
+                                                ? `
+                                                    <div class="col-md-6">
+                                                        <div class="p-3 rounded-3 border border-secondary-subtle bg-white h-100 d-flex align-items-center">
+                                                            <button class="btn btn-secondary w-100" id="btn_asginar_tecnico" onClick="assigTech('${id_report}')">
+                                                                <i class="bi bi-person-plus me-2"></i> Asignar a tecnico
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                `
+                                                : ""
+                                            }
+                                        </div>
+
                                     </div>
+                                </fieldset>
 
-                                </div>
-                            </fieldset>
+                                <!-- FORMULARIO DE EDICION (OCULTO AL INICIO) -->
+                                <div id="soporte-edit" class="visually-hidden border border-warning-subtle rounded-3 p-3 bg-secondary-subtle">
 
-                            <!-- FORMULARIO DE EDICIÓN (OCULTO AL INICIO) -->
-                            <div id="soporte-edit" class="visually-hidden border rounded p-3 bg-light-subtle">
+                                    <!-- Comentario -->
+                                    <label class="form-label fw-semibold">Comentario principal</label>
+                                    <textarea id="editComentarioSoporte" class="form-control" rows="2">${r.comment_ticket || ""}</textarea>
 
-                                <!-- Comentario -->
-                                <label class="form-label fw-bold mt-2">Comentario principal</label>
-                                <textarea id="editComentarioSoporte" class="form-control" rows="2">${r.comment_ticket || ""}</textarea>
+                                    <!-- Accion -->
+                                    <label class="form-label fw-semibold mt-3">Tipo de accion</label>
+                                    <select id="editAccion" class="form-select">
+                                        <option value="internal"   ${r.resolution_type_ticket == "internal" ? "selected" : ""}>Solucionado en oficina</option>
+                                        <option value="technician" ${r.assigned_to_technician == "technician" ? "selected" : ""}>Revision fisica con tecnico</option>
+                                    </select>
 
-                                <!-- Acción -->
-                                <label class="form-label fw-bold mt-3">Tipo de acción</label>
-                                <select id="editAccion" class="form-select">
-                                    <option value="internal"   ${r.resolution_type_ticket == "internal" ? "selected" : ""}>Solucionado en oficina</option>
-                                    <option value="technician" ${r.assigned_to_technician == "technician" ? "selected" : ""}>Revisión física con técnico</option>
-                                </select>
+                                    <!-- Solucionado 
+                                    <label class="form-label fw-bold mt-3">¿Equipo solucionado?</label>
+                                    <select id="editSolucionado" class="form-select">
+                                        <option value="si">Sí</option>
+                                        <option value="no">No</option>
+                                    </select> -->
 
-                                <!-- Solucionado 
-                                <label class="form-label fw-bold mt-3">¿Equipo solucionado?</label>
-                                <select id="editSolucionado" class="form-select">
-                                    <option value="si">Sí</option>
-                                    <option value="no">No</option>
-                                </select> -->
+                                    <!-- Resolución final 
+                                    <label class="form-label fw-bold mt-3">Resolución final</label>
+                                    <textarea id="editResolucion" class="form-control" rows="2">${r.resolucion || ""}</textarea> -->
 
-                                <!-- Resolución final 
-                                <label class="form-label fw-bold mt-3">Resolución final</label>
-                                <textarea id="editResolucion" class="form-control" rows="2">${r.resolucion || ""}</textarea> -->
+                                    <!-- Estado del reporte -->
+                                    <label class="form-label fw-semibold mt-3">Estado del reporte</label>
+                                    <select id="editEstado" class="form-select">
+                                        <option value="pending"     ${r.status_ticket == "pending"     ? "selected" : ""} >Pendiente</option>
+                                        <option value="in_progress" ${r.status_ticket == "in_progress" ? "selected" : ""} >En proceso</option>
+                                        <option value="completed"   ${r.status_ticket == "completed"   ? "selected" : ""} >Completado</option>
+                                    </select>
 
-                                <!-- EStado del reporte -->
-                                <label class="form-label fw-bold mt-3">Estado del reporte</label>
-                                <select id="editEstado" class="form-select">
-                                    <option value="pending"     ${r.status_ticket == "pending"     ? "selected" : ""} >Pendiente</option>
-                                    <option value="in_progress" ${r.status_ticket == "in_progress" ? "selected" : ""} >En proceso</option>
-                                    <option value="completed"   ${r.status_ticket == "completed"   ? "selected" : ""} >Completado</option>
-                                </select>
+                                    <label class="form-label fw-semibold mt-3">Escalado con tecnico</label>
+                                    <select id="edit_scale_technician" class="form-select">
+                                        <option value=1 ${r.assigned_to_technician == 1 ? "selected" : ""}> Si </option>
+                                        <option value=0 ${r.assigned_to_technician == 0 ? "selected" : ""}> No </option>
+                                    </select>
 
-                                <label class="form-label fw-bold mt-3">¿Escalado con tecnico?</label>
-                                <select id="edit_scale_technician" class="form-select">
-                                    <option value=1 ${r.assigned_to_technician == 1 ? "selected" : ""}> Sí </option>
-                                    <option value=0 ${r.assigned_to_technician == 0 ? "selected" : ""}> No </option>
-                                </select>
+                                    <div id="msg-response" class="mt-3"></div>
 
-                                <div id="msg-response" class="mt-3"></div>
+                                    <div class="text-end mt-3">
+                                        <button class="btn btn-outline-secondary" id="cancel-edit-btn">
+                                            <i class="bi bi-x-square me-2"></i> Cancelar edicion
+                                        </button>
 
-                                <div class="text-end mt-3">
-                                    <button class="btn btn-outline-secondary" id="cancel-edit-btn">
-                                        <i class="bi bi-x-square me-2"></i> Cancelar edición
-                                    </button>
-
-                                    <button class="btn btn-success" id="btnGuardarSoporte">
-                                        <i class="bi bi-save me-2"></i> Guardar cambios
-                                    </button>
+                                        <button class="btn btn-warning text-dark" id="btnGuardarSoporte">
+                                            <i class="bi bi-save me-2"></i> Guardar cambios
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -511,147 +524,171 @@ export const viewReport = async (id_report) => {
                       r.assigned_to_technician == 1 || r.is_billable == 1
                         ? `
                         <div class="col-4">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="fw-semibold text-muted">Ultima Actualizacion</span>
-                                <span class="badge rounded-pill bg-secondary">
-                                    <i class="bi bi-calendar-event me-1"></i> ${r.assigned_at_technician}
-                                </span>
-                            </div>
-                            <div class="p-3 border-0 rounded bg-white shadow-sm h-100">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5 class="text-dark mb-0 fw-semibold">
-                                        <i class="bi bi-tools me-2"></i> Seguimiento de tecnico y facturacion.
-                                    </h5>
-                                    <button class="btn btn-sm btn-outline-warning" id="btnEditarTecnico" onClick="assigTech('${id_report}')">
-                                        <i class="bi bi-pencil-square me-1"></i> Editar
-                                    </button>
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-header bg-dark text-warning d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-tools"></i>
+                                        <span class="fw-semibold">Seguimiento tecnico y facturacion</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge rounded-pill text-bg-secondary">
+                                            <i class="bi bi-calendar-event me-1"></i> ${r.assigned_at_technician}
+                                        </span>
+                                        <button class="btn btn-sm btn-warning text-dark" id="btnEditarTecnico" onClick="assigTech('${id_report}')">
+                                            <i class="bi bi-pencil-square me-1"></i> Editar
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <div id="tecnico-view">
-                                    <fieldset class="border border-secondary-subtle rounded p-3">
-                                        <legend class="float-none w-auto fw-semibold px-2 text-warning-emphasis">Datos de tecnico</legend>
-                                        <div class="row mb-1 ">
-                                            <div class="col-md-6">
-                                                <strong class="text-dark">
-                                                <i class="me-2 bi bi-person-gear"></i>Tecnico instalador</strong>
-                                                <div class="p-2 mt-1 border rounded bg-light">
-                                                    ${r.technician_name || "<span class='text-muted'>Sin tecnico</span>"}
+                                <div class="card-body bg-white">
+                                    <div id="tecnico-view" class="d-grid gap-3">
+                                        <fieldset class="border border-warning-subtle rounded-3 p-3 bg-secondary-subtle">
+                                            <legend class="float-none w-auto fw-semibold px-2 text-warning-emphasis">Datos de tecnico</legend>
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <div class="p-3 rounded-3 border border-secondary-subtle bg-white h-100">
+                                                        <div class="small text-secondary fw-semibold mb-1">
+                                                            <i class="me-2 bi bi-person-gear"></i> Tecnico instalador
+                                                        </div>
+                                                        <div class="fw-semibold text-dark">
+                                                            ${r.technician_name || "<span class='text-secondary'>Sin tecnico</span>"}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="p-3 rounded-3 border border-secondary-subtle bg-white h-100">
+                                                        <div class="small text-secondary fw-semibold mb-1">
+                                                            <i class="me-2 bi bi-currency-dollar"></i> Costo de reparacion
+                                                        </div>
+                                                        <div class="fw-semibold text-dark">
+                                                            $${r.service_cost_technician || "<span class='text-secondary'>0.00</span>"}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="p-3 rounded-3 border border-secondary-subtle bg-white">
+                                                        <div class="small text-secondary fw-semibold mb-1">
+                                                            <i class="me-2 bi bi-arrow-bar-right"></i> Estatus de reparacion
+                                                        </div>
+                                                        <div class="fw-semibold text-dark">
+                                                            ${
+                                                              {
+                                                                pending: "Pendiente",
+                                                                in_progress: "En proceso",
+                                                                completed: "Terminado",
+                                                              }[r.status_technician] || "Sin estatus"
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="p-3 rounded-3 border border-secondary-subtle bg-white">
+                                                        <div class="small text-secondary fw-semibold mb-1">
+                                                            <i class="me-2 bi bi-chat-left-dots"></i> Comentarios
+                                                        </div>
+                                                        <div class="text-dark">
+                                                            ${r.comment_technician || "<span class='text-secondary'>Sin comentarios de tecnico aun</span>"}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
-                                                <i class="me-2 bi bi-currency-dollar"></i>
-                                                <strong class="text-dark">Costo de reparación</strong>
-                                                <div class="p-2 mt-1 border rounded bg-light">
-                                                    $${r.service_cost_technician || "<span class='text-muted'>0.00</span>"}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="mb-1">
-                                            <i class="me-2 bi bi-arrow-bar-right"></i>
-                                            <strong class="text-dark"><i class="me-2"></i>Estatus de reparacion</strong>
-                                            <div class="p-2 mt-1 border rounded bg-light">
-                                                ${
-                                                  {
-                                                    pending: "Pendiente",
-                                                    in_progress: "En proceso",
-                                                    completed: "Terminado",
-                                                  }[r.status_technician] || "Sin estatus"
-                                                }
-                                            </div>
-                                        </div>
+                                        </fieldset>
 
-                                        <div class="mb-1">
-                                            <i class="me-2 bi bi-chat-left-dots"></i>
-                                            <strong class="text-dark"><i class="me-2"></i>Comentarios</strong>
-                                            <div class="p-2 mt-1 border rounded bg-light">
-                                                ${r.comment_technician || "<span class='text-muted'>Sin comentarios de tecnico aun</span>"}
-                                            </div>
-                                        </div>
-                                    </fieldset>
+                                        <fieldset class="border border-warning-subtle rounded-3 p-3 bg-secondary-subtle position-relative">
+                                            <legend class="float-none w-auto fw-semibold px-2 text-warning-emphasis">Facturacion</legend>
+                                            ${
+                                              r.id_payment != null 
+                                              ? `<button class="btn btn-sm btn-warning text-dark position-absolute" onClick="viewFacturation(${r.id_payment})" style="right: 8px; top: 8px;">
+                                                  <i class="bi bi-eye me-1"></i> Ver factura
+                                                </button>`
+                                              : ``
+                                            }
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <div class="p-3 rounded-3 border border-secondary-subtle bg-white h-100">
+                                                        <div class="small text-secondary fw-semibold mb-1">Facturacion</div>
+                                                        <div class="fw-semibold text-dark">
+                                                            ${ (r.is_billable == 0 || r.is_billable == null) ? "No" : "Si" || "No data"}
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-                                    <fieldset class="border border-secondary-subtle rounded p-3 position-relative">
-                                        <legend class="float-none w-auto fw-semibold px-2 text-warning-emphasis">Facturacion</legend>
-                                        ${
-                                          r.id_payment != null 
-                                          ? `<button class="btn btn-sm btn-outline-warning position-absolute m-1" onClick="viewFacturation(${r.id_payment})"style="right: 8px; top: 8px;">
-                                              <i class="bi bi-eye me-1"></i> VerFactura
-                                            </button>`
-                                          : ``
-                                        }        
-                                        <div class="row mb-1">
-                                            <div class="col-md-6">
-                                                <strong class="text-dark">Facturacion</strong>
-                                                <div class="p-2 mt-1 border rounded bg-light">
-                                                    ${ (r.is_billable == 0 || r.is_billable == null) ? "No" : "Si" || "No data"}
+                                                <div class="col-md-6">
+                                                    <div class="p-3 rounded-3 border border-secondary-subtle bg-white h-100">
+                                                        <div class="small text-secondary fw-semibold mb-1">
+                                                            <i class="me-2 bi bi-book"></i> Folio
+                                                        </div>
+                                                        <div class="fw-semibold text-dark">${r.invoice_folio || "No data"}</div>
+                                                    </div>
                                                 </div>
-                                                
-                                            </div>
 
-                                            <div class="col-md-6">
-                                                <i class="me-2 bi bi-book"></i>
-                                                <strong class="text-dark">Folio</strong>
-                                                <div class="p-2 mt-1 border rounded bg-light">
-                                                    ${r.invoice_folio || "No data"}
+                                                <div class="col-md-6">
+                                                    <div class="p-3 rounded-3 border border-secondary-subtle bg-white h-100">
+                                                        <div class="small text-secondary fw-semibold mb-1">
+                                                            <i class="me-2 bi bi-currency-dollar"></i> Costo de cobro a cliente
+                                                        </div>
+                                                        <div class="fw-semibold text-dark">$${r.amount || "0.00"}</div>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="col-md-6">
-                                                <i class="me-2 bi bi-currency-dollar"></i>
-                                                <strong class="text-dark">Costo de cobro a cliente</strong>
-                                                <div class="p-2 mt-1 border rounded bg-light">
-                                                    $${r.amount || "0.00"}
+                                                <div class="col-md-6">
+                                                    <div class="p-3 rounded-3 border border-secondary-subtle bg-white h-100">
+                                                        <div class="small text-secondary fw-semibold mb-1">
+                                                            <i class="me-2 bi bi-calendar-date"></i> Fecha de pago
+                                                        </div>
+                                                        <div class="fw-semibold text-dark">${r.paid_at_payment?.split(" ")[0] || "Sin pago aun"}</div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                                
-                                            <div class="col-md-6">
-                                                <i class="me-2 bi bi-calendar-date"></i>
-                                                <strong class="text-dark">Fecha de pago</strong>
-                                                <div class="p-2 mt-1 border rounded bg-light">
-                                                    ${r.paid_at_payment?.split(" ")[0] || "Sin pago aun"}
-                                                </div>
-                                            </div>
 
-                                            <div class="col-md-6">
-                                                <i class="me-2 bi bi-bookmark-fill"></i>
-                                                <strong class="text-dark">Status de pago</strong>
-                                                <div class="p-2 mt-1 border rounded bg-light">
-                                                    ${
-                                                        {
-                                                            pending: 'Pendiente de pago',
-                                                            paid: 'Factura pagada',
-                                                            overdue: 'Vencida',
-                                                            cancelled: 'Cancelada'    
-                                                        }
-                                                      [r.payment_status] || `No data`
-                                                    }
+                                                <div class="col-md-6">
+                                                    <div class="p-3 rounded-3 border border-secondary-subtle bg-white h-100">
+                                                        <div class="small text-secondary fw-semibold mb-1">
+                                                            <i class="me-2 bi bi-bookmark-fill"></i> Status de pago
+                                                        </div>
+                                                        <div class="fw-semibold text-dark">
+                                                            ${
+                                                                {
+                                                                    pending: 'Pendiente de pago',
+                                                                    paid: 'Factura pagada',
+                                                                    overdue: 'Vencida',
+                                                                    cancelled: 'Cancelada'    
+                                                                }
+                                                              [r.payment_status] || `No data`
+                                                            }
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="col-md-6">
-                                                <i class="me-2 bi bi-bookmark-fill"></i>
-                                                <strong class="text-dark">Concepto</strong>
-                                                <div class="p-2 mt-1 border rounded bg-light">
-                                                    ${
-                                                        {
-                                                            warranty: 'Garantia',
-                                                            service: 'Servicio general',
-                                                            general: 'General',
-                                                        }
-                                                      [r.concept_payment] || `No data`
-                                                    }
+                                                <div class="col-md-6">
+                                                    <div class="p-3 rounded-3 border border-secondary-subtle bg-white h-100">
+                                                        <div class="small text-secondary fw-semibold mb-1">
+                                                            <i class="me-2 bi bi-bookmark-fill"></i> Concepto
+                                                        </div>
+                                                        <div class="fw-semibold text-dark">
+                                                            ${
+                                                                {
+                                                                    warranty: 'Garantia',
+                                                                    service: 'Servicio general',
+                                                                    general: 'General',
+                                                                }
+                                                              [r.concept_payment] || `No data`
+                                                            }
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="col-md-12">
-                                                <i class="me-2 bi bi-chat-left-dots"></i>
-                                                <strong class="text-dark">Comentario de factura</strong>
-                                                <div class="p-2 mt-1 border rounded bg-light">
-                                                    ${r.comment_payment || "Sin comentario en la factura"}
+                                                <div class="col-md-12">
+                                                    <div class="p-3 rounded-3 border border-secondary-subtle bg-white">
+                                                        <div class="small text-secondary fw-semibold mb-1">
+                                                            <i class="me-2 bi bi-chat-left-dots"></i> Comentario de factura
+                                                        </div>
+                                                        <div class="text-dark">${r.comment_payment || "Sin comentario en la factura"}</div>
+                                                    </div>
                                                 </div>
+
                                             </div>
-                                                
-                                        </div>
-                                    </fieldset>
+                                        </fieldset>
+                                    </div>
                                 </div>
                             </div>
                         </div>`
@@ -660,7 +697,6 @@ export const viewReport = async (id_report) => {
                 </div>
             </div>
         `;
-
     // Mostrar el contenido final
     $("#report-content").html(html).removeClass("visually-hidden");
     $("#report-loader").addClass("visually-hidden");
@@ -1003,3 +1039,4 @@ const assigTech = async (id_report) => {
   } catch (error) {}
 };
 window.assigTech = assigTech;
+

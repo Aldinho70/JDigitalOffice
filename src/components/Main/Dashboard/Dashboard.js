@@ -311,8 +311,6 @@ const getListKpi = async () => {
         );
 
         if (response.status === 'ok') {
-            console.log(response.mensaje);
-            
             const html = response.mensaje.map( (tecnico) => {
                 return `
                     <li class="list-group-item d-flex align-items-center gap-2">
